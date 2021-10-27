@@ -48,3 +48,22 @@ class RegisterSerializer(serializers.ModelSerializer):
             return user
         except Exception as e:
             return e
+
+class ChangePasswordSerializer(serializers.Serializer):
+    model = User
+
+    def validate(self, data):
+        password = data.get('new_password')
+        if len(password) < 8:
+            raise ValidationError("Make sure your password is at lest 8 letters")
+        elif re.search('[0-9]',password) is None:
+            raise ValidationError("Make sure your password has a number in it")
+        elif re.search('[A-Z]',password) is None: 
+            raise ValidationError("Make sure your password has a capital letter in it")
+        return data
+
+    """
+    Serializer for password change endpoint.
+    """
+    old_password = serializers.CharField(required=True)
+    new_password = serializers.CharField(required=True)
