@@ -67,3 +67,18 @@ class ChangePasswordSerializer(serializers.Serializer):
     """
     old_password = serializers.CharField(required=True)
     new_password = serializers.CharField(required=True)
+
+
+# Login Serializer
+class LoginSerializer(serializers.ModelSerializer):
+
+    password = serializers.CharField(
+        write_only=True,
+        required=True,
+        help_text='Enter your password',
+        style={'input_type': 'password', 'placeholder': 'Password'}
+    )
+
+    class Meta:
+        model = User
+        fields = ('username', 'password')
