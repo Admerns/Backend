@@ -28,7 +28,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'rest_framework_swagger',
+    'drf_yasg',
     'knox',
     'accounts',
 ]
@@ -95,10 +95,11 @@ REST_FRAMEWORK = {
         #'rest_framework.authentication.SessionAuthentication',
         'knox.auth.TokenAuthentication',
         
+        
     ],
-    'DEFAULT_SCHEMA_CLASS':[
-        'rest_framework.schemas.coreapi.AutoSchema' ,
-    ]
+    'DEFAULT_SCHEMA_CLASS':
+        'rest_framework.schemas.coreapi.AutoSchema'
+
 }
 
 
