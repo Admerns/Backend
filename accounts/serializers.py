@@ -15,6 +15,8 @@ class UserSerializer(serializers.ModelSerializer):
 class RegisterSerializer(serializers.ModelSerializer):
 
     password2 = CharField(label='Confirm Password')
+    first_name = CharField(max_length=32)
+    last_name = CharField(max_length=32)
 
     class Meta:
         model = User
