@@ -31,7 +31,19 @@ INSTALLED_APPS = [
     'drf_yasg',
     'knox',
     'accounts',
+    'django_rest_passwordreset',
 ]
+
+
+# Setting up email congifurations
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.mailtrap.io'
+EMAIL_PORT = '2525'
+EMAIL_HOST_USER = 'ab4502ecad0538'
+EMAIL_HOST_PASSWORD = 'ec41f809d3027d'
+EMAIL_USE_TLS = True
+EMAIL_USE_SSL = False
 
 
 
