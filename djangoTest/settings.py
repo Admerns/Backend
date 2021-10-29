@@ -38,10 +38,10 @@ INSTALLED_APPS = [
 # Setting up email congifurations
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.mailtrap.io'
-EMAIL_PORT = '2525'
-EMAIL_HOST_USER = 'ab4502ecad0538'
-EMAIL_HOST_PASSWORD = 'ec41f809d3027d'
+EMAIL_HOST = 'smtp-relay.sendinblue.com'
+EMAIL_PORT = '587'
+EMAIL_HOST_USER = 'Ali.rko1379@gmail.com'
+EMAIL_HOST_PASSWORD = 'sQnF6UfNgjmyTBZp'
 EMAIL_USE_TLS = True
 EMAIL_USE_SSL = False
 
