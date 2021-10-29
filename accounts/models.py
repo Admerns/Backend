@@ -15,7 +15,7 @@ def password_reset_token_created(sender, instance, reset_password_token, *args, 
         # title:
         "Password Reset for {title}".format(title="Shanbe App"),
         # message:
-        email_plaintext_message,
+         "کد زیر برای تغییر رمز عبور شما ارسال شده است. \n اگر شما درخواستی برای تغییر رمز عبور خود نداده اید لطفا به این پیام توجه نکنید. \n" + email_plaintext_message,
         # from:
         "noreply@shanbe.local",
         # to:
