@@ -1,7 +1,8 @@
+from enum import unique
 from rest_framework import serializers
 from django.contrib.auth.models import User
 from django.forms import ValidationError
-from rest_framework.fields import CharField
+from rest_framework.fields import CharField, EmailField
 import re
 
 # User Serializer
@@ -18,7 +19,19 @@ class RegisterSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ('id', 'username', 'email', 'password', 'password2','first_name', 'last_name')
-        extra_kwargs = {'password': {'write_only': True},'password2': {'write_only': True},'first_name': {'required': True},'last_name': {'required': True}}
+        extra_kwargs = {
+            'password': {'write_only': True},
+            'password2': {'write_only': True},
+            'first_name': {'required': True},
+            'last_name': {'required': True},
+            "email": {'required': True }
+        }
+
+    def validate_email(self, value):
+        norm_email = value.lower()
+        if User.objects.filter(email=norm_email).exists():
+            raise serializers.ValidationError("Your email is already registered!")
+        return norm_email
 
     def validate(self, data):
         password = data.get('password')
