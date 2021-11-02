@@ -4,11 +4,9 @@ from django.db import connection
 from django.forms import ValidationError
 
 
-
 # Create your models here.
 class task(models.Model):
     user_token = models.CharField(max_length=500, blank=False, default='')
-    #userid = models.ForeignKey(User,on_delete=models.CASCADE)
     userid = models.IntegerField(blank=False)
     title = models.CharField(max_length=500, blank=False)
     time = models.DateTimeField(auto_now_add=True)

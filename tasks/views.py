@@ -1,4 +1,3 @@
-from django.shortcuts import render
 from rest_framework import generics
 from .serializers import Task_Create_Serializer
 from rest_framework.response import Response
