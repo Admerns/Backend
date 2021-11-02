@@ -1,1 +1,1 @@
-web: gunicorn djangoTest.wsgi --log-file -
+web: gunicorn Shanbe_Back.wsgi --log-file -

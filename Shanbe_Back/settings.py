@@ -58,7 +58,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'djangoTest.urls'
+ROOT_URLCONF = 'Shanbe_Back.urls'
 
 TEMPLATES = [
     {
@@ -77,7 +77,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'djangoTest.wsgi.application'
+WSGI_APPLICATION = 'Shanbe_Back.wsgi.application'
 
 
 # Database
