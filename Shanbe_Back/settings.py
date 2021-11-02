@@ -83,23 +83,23 @@ WSGI_APPLICATION = 'Shanbe_Back.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
-#     }
-# }
-
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'JbYuR8XzJt',
-        'HOST': 'remotemysql.com',
-        'PORT': '3306',
-        'USER': 'JbYuR8XzJt',
-        'PASSWORD': '1nM97N2yYQ',
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.mysql',
+#         'NAME': 'JbYuR8XzJt',
+#         'HOST': 'remotemysql.com',
+#         'PORT': '3306',
+#         'USER': 'JbYuR8XzJt',
+#         'PASSWORD': '1nM97N2yYQ',
+#     }
+# }
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
