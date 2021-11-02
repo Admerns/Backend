@@ -21,9 +21,12 @@ class task(models.Model):
         self.userid = int(id[0])
     
     def save(self, *args, **kwargs):
-        if not self.userid:
-            self.set_userid()
-        return super(task, self).save(*args, **kwargs)
+        try:
+            if not self.userid:
+                self.set_userid()
+            return super(task, self).save(*args, **kwargs)
+        except:
+            raise ValidationError("This token does not exist!")
 
     class Meta:
         db_table = 'tasks'
