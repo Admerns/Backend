@@ -19,6 +19,11 @@ class task(models.Model):
             cursor.execute("SELECT user_id FROM Knox_authtoken WHERE token_key = %s", [self.user_token[:8]])
             id = cursor.fetchone()
         self.userid = int(id[0])
+    
+    def save(self, *args, **kwargs):
+        if not self.userid:
+            self.set_userid()
+        return super(task, self).save(*args, **kwargs)
 
     class Meta:
         db_table = 'tasks'
