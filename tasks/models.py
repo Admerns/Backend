@@ -14,5 +14,11 @@ class task(models.Model):
     alarm_check = models.TextField()
     push_notification = models.TextField()
 
+    def set_userid(self):
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT user_id FROM Knox_authtoken WHERE token_key = %s", [self.user_token[:8]])
+            id = cursor.fetchone()
+        self.userid = int(id[0])
+
     class Meta:
         db_table = 'tasks'
