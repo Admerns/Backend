@@ -2,6 +2,8 @@ from rest_framework import generics, permissions, status
 from rest_framework.response import Response
 from knox.models import AuthToken
 
+from accounts.models import UserProfile
+
 from .serializers import UserSerializer,LoginSerializer, RegisterSerializer, ChangePasswordSerializer, EditSerializer
 
 from django.contrib.auth import login
@@ -9,6 +11,7 @@ from rest_framework.authtoken.serializers import AuthTokenSerializer
 from knox.views import LoginView as KnoxLoginView
 from django.contrib.auth.models import User
 from rest_framework.permissions import IsAuthenticated 
+
 
 # Register API
 class RegisterAPI(generics.GenericAPIView):
@@ -80,12 +83,17 @@ class EditAPI(generics.UpdateAPIView):
     def update(self, request, *args, **kwargs):
         self.object = self.get_object()
         serializer = self.get_serializer(data=request.data)
-
         if serializer.is_valid():
             self.object.email = (serializer.data.get("email"))
             self.object.first_name = (serializer.data.get("first_name"))
             self.object.last_name = (serializer.data.get("last_name"))
             self.object.save()
+
+            profile = UserProfile(user=self.object, phone_number = (serializer.data.get("phone_number")))
+
+            profile.save()
+            self.object.save()
+
 
             response = {
                 'status': 'success',

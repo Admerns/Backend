@@ -102,7 +102,9 @@ class LoginSerializer(serializers.ModelSerializer):
 # Edit Profile Serializer
 class EditSerializer(serializers.ModelSerializer):
 
-    avatar = ImageField(label= 'avatar', required=False)
+
+    
+    avatar = ImageField(required=False)
     first_name = CharField(max_length=32, required=False)
     last_name = CharField(max_length=32, required=False)
     phone_number = CharField(max_length=13, required=False)
@@ -111,14 +113,10 @@ class EditSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ('id', 'email', 'first_name' , 'last_name' , 'avatar' , 'phone_number')
-        extra_kwargs = {
-            "avatar": {'required': False , 'write_only' : True}
-        }
 
-    def validate_email(self,instance, value):
+
+    def validate_email(self, value):
         norm_email = value.lower()
-        if norm_email == instance.email:
-            return norm_email
         if User.objects.filter(email=norm_email).exists():
             raise serializers.ValidationError("Your email is already registered!")
         return norm_email
