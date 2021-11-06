@@ -32,6 +32,7 @@ INSTALLED_APPS = [
     'knox',
     'accounts',
     'django_rest_passwordreset',
+    'tasks',
 ]
 
 
