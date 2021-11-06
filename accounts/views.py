@@ -2,7 +2,7 @@ from rest_framework import generics, permissions, status
 from rest_framework.response import Response
 from knox.models import AuthToken
 
-from .serializers import UserSerializer,LoginSerializer, RegisterSerializer, ChangePasswordSerializer
+from .serializers import UserSerializer,LoginSerializer, RegisterSerializer, ChangePasswordSerializer, EditSerializer
 
 from django.contrib.auth import login
 from rest_framework.authtoken.serializers import AuthTokenSerializer
@@ -61,6 +61,36 @@ class ChangePasswordView(generics.UpdateAPIView):
                 'status': 'success',
                 'code': status.HTTP_200_OK,
                 'message': 'Password updated successfully',
+                'data': []
+            }
+
+            return Response(response)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class EditAPI(generics.UpdateAPIView):
+    serializer_class = EditSerializer
+    model = User
+    permission_classes = (IsAuthenticated,)
+
+    def get_object(self, queryset=None):
+        obj = self.request.user
+        return obj
+
+    def update(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        serializer = self.get_serializer(data=request.data)
+
+        if serializer.is_valid():
+            self.object.email = (serializer.data.get("email"))
+            self.object.first_name = (serializer.data.get("first_name"))
+            self.object.last_name = (serializer.data.get("last_name"))
+            self.object.save()
+
+            response = {
+                'status': 'success',
+                'code': status.HTTP_200_OK,
+                'message': 'Profile updated successfully',
                 'data': []
             }
 

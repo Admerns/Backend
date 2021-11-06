@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 from django.dispatch import receiver
 from django.urls import reverse
@@ -20,4 +21,13 @@ def password_reset_token_created(sender, instance, reset_password_token, *args, 
         "noreply@shanbe.local",
         # to:
         [reset_password_token.user.email]
+    )
+
+
+class UserProfile(models.Model):
+    avatar = models.ImageField()
+    user = models.OneToOneField(
+        User,
+        on_delete=models.CASCADE,
+        primary_key=True,
     )

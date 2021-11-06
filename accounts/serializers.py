@@ -2,7 +2,7 @@ from enum import unique
 from rest_framework import serializers
 from django.contrib.auth.models import User
 from django.forms import ValidationError
-from rest_framework.fields import CharField, EmailField
+from rest_framework.fields import CharField, EmailField, ImageField
 import re
 
 # User Serializer
@@ -82,6 +82,47 @@ class ChangePasswordSerializer(serializers.Serializer):
     """
     old_password = serializers.CharField(required=True)
     new_password = serializers.CharField(required=True)
+
+
+# Login Serializer
+class LoginSerializer(serializers.ModelSerializer):
+
+    password = serializers.CharField(
+        write_only=True,
+        required=True,
+        help_text='Enter your password',
+        style={'input_type': 'password', 'placeholder': 'Password'}
+    )
+
+    class Meta:
+        model = User
+        fields = ('username', 'password')
+
+
+# Edit Profile Serializer
+class EditSerializer(serializers.ModelSerializer):
+
+    avatar = ImageField(label= 'avatar', required=False)
+    first_name = CharField(max_length=32, required=False)
+    last_name = CharField(max_length=32, required=False)
+    phone_number = CharField(max_length=13, required=False)
+
+
+    class Meta:
+        model = User
+        fields = ('id', 'email', 'first_name' , 'last_name' , 'avatar' , 'phone_number')
+        extra_kwargs = {
+            "avatar": {'required': False , 'write_only' : True}
+        }
+
+    def validate_email(self,instance, value):
+        norm_email = value.lower()
+        if norm_email == instance.email:
+            return norm_email
+        if User.objects.filter(email=norm_email).exists():
+            raise serializers.ValidationError("Your email is already registered!")
+        return norm_email
+
 
 
 # Login Serializer
