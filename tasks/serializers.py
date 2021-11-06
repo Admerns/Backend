@@ -6,8 +6,9 @@ from .models import task
 from rest_framework import viewsets
 
 
-class Task_Create_Serializer(serializers.ModelSerializer):
+class Task_CreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = task
-        fields = ('id', 'user_token', 'title', 'time', 'category', 'description',
+        fields = ('id', 'user_token', 'task_token', 'title', 'time', 'category', 'description',
          'alarm_check', 'push_notification')
+        extra_kwargs = {'task_token': {'read_only': True}}
