@@ -32,10 +32,21 @@ def password_reset_token_created(sender, instance, reset_password_token, *args, 
         [reset_password_token.user.email]
     )
 
+def path_and_rename(instance, filename):
+    upload_to = 'images/userProfile'
+    ext = filename.split('.')[-1]
+    # get filename
+    if instance.pk:
+        filename = '{}.{}'.format(instance.pk, ext)
+    else:
+        # set filename as random string
+        filename = '{}.{}'.format(uuid4().hex, ext)
+    # return the whole path to the file
+    return os.path.join(upload_to, filename)
 
 
 class UserProfile(models.Model):
-    avatar = models.ImageField(upload_to="images/userProfile", blank=True ,null = True)
+    avatar = models.ImageField(upload_to=path_and_rename, blank=True ,null = True)
     phone_number = models.CharField(max_length=13)
     user = models.OneToOneField(
         User,
