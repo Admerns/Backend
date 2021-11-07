@@ -9,6 +9,12 @@ from django.urls import reverse
 from django_rest_passwordreset.signals import reset_password_token_created
 from django.core.mail import send_mail  
 
+
+from django.utils import timezone
+import os
+from uuid import uuid4
+
+
 # Create your models here.
 @receiver(reset_password_token_created)
 def password_reset_token_created(sender, instance, reset_password_token, *args, **kwargs):
@@ -25,6 +31,7 @@ def password_reset_token_created(sender, instance, reset_password_token, *args, 
         # to:
         [reset_password_token.user.email]
     )
+
 
 
 class UserProfile(models.Model):

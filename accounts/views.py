@@ -51,7 +51,7 @@ class ChangePasswordView(generics.UpdateAPIView):
 
     def update(self, request, *args, **kwargs):
         self.object = self.get_object()
-        serializer = self.get_serializer(data=request.data)
+        serializer = self.get_serializer(data=request.data, files=request.FILES)
 
         if serializer.is_valid():
             # Check old password
@@ -89,7 +89,8 @@ class EditAPI(generics.UpdateAPIView):
             self.object.last_name = (serializer.data.get("last_name"))
             self.object.save()
 
-            profile = UserProfile(user=self.object, phone_number = (serializer.data.get("phone_number")))
+            print (serializer.validated_data["avatar"])
+            profile = UserProfile(user=self.object, phone_number = serializer.data.get("phone_number") , avatar = serializer.validated_data["avatar"])
 
             profile.save()
             self.object.save()

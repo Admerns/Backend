@@ -102,9 +102,8 @@ class LoginSerializer(serializers.ModelSerializer):
 # Edit Profile Serializer
 class EditSerializer(serializers.ModelSerializer):
 
-
     
-    avatar = ImageField(required=False)
+    avatar = ImageField(max_length=None, use_url=True, allow_null=True, required=False)
     first_name = CharField(max_length=32, required=False)
     last_name = CharField(max_length=32, required=False)
     phone_number = CharField(max_length=13, required=False)
