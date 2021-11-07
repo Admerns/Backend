@@ -106,7 +106,7 @@ class EditSerializer(serializers.ModelSerializer):
     avatar = ImageField(max_length=None, use_url=True, allow_null=True, required=False)
     first_name = CharField(max_length=32, required=False)
     last_name = CharField(max_length=32, required=False)
-    phone_number = CharField(max_length=13, required=False)
+    phone_number = CharField(max_length=13,min_length=8, required=False)
 
     class Meta:
         model = User
@@ -114,7 +114,8 @@ class EditSerializer(serializers.ModelSerializer):
         extra_kwargs = {
             'first_name': {'required': False},
             'last_name': {'required': False},
-            "email": {'required': False }
+            "email": {'required': False },
+            "phone_number": {'required': False },
         }
 
 

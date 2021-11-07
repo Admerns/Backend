@@ -14,7 +14,6 @@ from django.utils import timezone
 import os
 from uuid import uuid4
 
-
 # Create your models here.
 @receiver(reset_password_token_created)
 def password_reset_token_created(sender, instance, reset_password_token, *args, **kwargs):
@@ -50,8 +49,8 @@ def path_and_rename(instance, filename):
 
 
 class UserProfile(models.Model):
-    avatar = models.ImageField(upload_to=path_and_rename, blank=True ,null = True)
-    phone_number = models.CharField(max_length=13)
+    avatar = models.ImageField(upload_to=path_and_rename, blank=True ,null=True)
+    phone_number = models.CharField(max_length=13, null=True, blank=True)
     user = models.OneToOneField(
         User,
         on_delete=models.CASCADE,
