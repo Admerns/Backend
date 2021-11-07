@@ -108,15 +108,23 @@ class EditSerializer(serializers.ModelSerializer):
     last_name = CharField(max_length=32, required=False)
     phone_number = CharField(max_length=13, required=False)
 
-
     class Meta:
         model = User
         fields = ('id', 'email', 'first_name' , 'last_name' , 'avatar' , 'phone_number')
+        extra_kwargs = {
+            'first_name': {'required': False},
+            'last_name': {'required': False},
+            "email": {'required': False }
+        }
 
 
     def validate_email(self, value):
+        user = self.context['request'].user
+        print(user)
         norm_email = value.lower()
-        if User.objects.filter(email=norm_email).exists():
+        if (norm_email == user.email):
+            return norm_email
+        if User.objects.filter(email=norm_email):
             raise serializers.ValidationError("Your email is already registered!")
         return norm_email
 

@@ -32,6 +32,10 @@ def password_reset_token_created(sender, instance, reset_password_token, *args, 
         [reset_password_token.user.email]
     )
 
+
+
+
+# Change filename to user_id
 def path_and_rename(instance, filename):
     upload_to = 'images/userProfile'
     ext = filename.split('.')[-1]

@@ -84,12 +84,12 @@ class EditAPI(generics.UpdateAPIView):
         self.object = self.get_object()
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
-            self.object.email = (serializer.data.get("email"))
+            if(serializer.data.get("email") != None):
+                self.object.email = (serializer.data.get("email"))
             self.object.first_name = (serializer.data.get("first_name"))
             self.object.last_name = (serializer.data.get("last_name"))
             self.object.save()
 
-            print (serializer.validated_data["avatar"])
             profile = UserProfile(user=self.object, phone_number = serializer.data.get("phone_number") , avatar = serializer.validated_data["avatar"])
 
             profile.save()
