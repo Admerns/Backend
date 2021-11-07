@@ -97,6 +97,9 @@ class LoginSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ('username', 'password')
+    
+    def validate(self, data):
+        return data
 
 
 # Edit Profile Serializer

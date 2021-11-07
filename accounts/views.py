@@ -26,7 +26,7 @@ class RegisterAPI(generics.GenericAPIView):
         "token": AuthToken.objects.create(user)[1]
         })
 
-class LoginAPI(KnoxLoginView):
+class LoginAPI(KnoxLoginView, generics.GenericAPIView):
     permission_classes = (permissions.AllowAny,)
     serializer_class = LoginSerializer
     def post(self, request):
