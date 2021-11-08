@@ -1,31 +1,54 @@
 from enum import unique
 from rest_framework import serializers
 from django.contrib.auth.models import User
+from accounts.models import UserProfile
 from django.forms import ValidationError
 from rest_framework.fields import CharField, EmailField, ImageField
 import re
 
 # User Serializer
 class UserSerializer(serializers.ModelSerializer):
+    phone_number = serializers.SerializerMethodField()
+    avatar = serializers.SerializerMethodField()
+
+    def get_phone_number(self, obj):
+        return obj.userprofile.phone_number
+
+    def get_avatar(self, obj):
+        try:
+            return (obj.userprofile.avatar.url)
+        except Exception as e:
+            return "None"
+
     class Meta:
         model = User
-        fields = ('id', 'username', 'email')
+        fields = ('id', 'username', 'email', 'first_name', 'last_name', 'phone_number', 'avatar')
 
 # Register Serializer
 class RegisterSerializer(serializers.ModelSerializer):
 
-    password2 = CharField(label='Confirm Password')
-    first_name = CharField(max_length=32)
-    last_name = CharField(max_length=32)
+    email = EmailField(required = True)
+    password = serializers.CharField(
+        label = "password",
+        write_only=True,
+        required=True,
+        help_text='Enter your password',
+        style={'input_type': 'password', 'placeholder': 'Password'}
+    )
+    password2 = serializers.CharField(
+        label = "confirm password",
+        write_only=True,
+        required=True,
+        help_text='Enter your password again',
+        style={'input_type': 'password', 'placeholder': 'Password'}
+    )
 
     class Meta:
         model = User
-        fields = ('id', 'username', 'email', 'password', 'password2','first_name', 'last_name')
+        fields = ('id', 'username', 'email', 'password', 'password2')
         extra_kwargs = {
             'password': {'write_only': True},
             'password2': {'write_only': True},
-            'first_name': {'required': True},
-            'last_name': {'required': True},
             "email": {'required': True }
         }
 
@@ -105,7 +128,7 @@ class LoginSerializer(serializers.ModelSerializer):
 # Edit Profile Serializer
 class EditSerializer(serializers.ModelSerializer):
 
-    
+    email = EmailField(required = False)
     avatar = ImageField(max_length=None, use_url=True, allow_null=True, required=False)
     first_name = CharField(max_length=32, required=False)
     last_name = CharField(max_length=32, required=False)

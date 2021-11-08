@@ -12,6 +12,13 @@ from knox.views import LoginView as KnoxLoginView
 from django.contrib.auth.models import User
 from rest_framework.permissions import IsAuthenticated 
 
+# Return Current User API
+class CurrentUserAPI(generics.GenericAPIView):
+    serializer_class = UserSerializer
+    def post(self, request):
+        serializer = self.get_serializer(request.user)
+        return Response(serializer.data)
+
 
 # Register API
 class RegisterAPI(generics.GenericAPIView):
@@ -84,16 +91,20 @@ class EditAPI(generics.UpdateAPIView):
         self.object = self.get_object()
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
-            if(serializer.data.get("email") != None):
+            if(serializer.data.get("email") != None and serializer.data.get("email") != ""):
                 self.object.email = (serializer.data.get("email"))
             if(serializer.data.get("first_name") != None):
                 self.object.first_name = (serializer.data.get("first_name"))
-            if(serializer.data.get("last_name") != None):
+            if(serializer.data.get("last_name") != None ):
                 self.object.last_name = (serializer.data.get("last_name"))
             self.object.save()
 
             try:
-                profile = UserProfile(user=self.object, phone_number = serializer.data.get("phone_number") , avatar = serializer.validated_data["avatar"])
+                if(serializer.data.get("phone_number") != None ):
+                    profile = UserProfile(user=self.object, phone_number = serializer.data.get("phone_number") , avatar = serializer.validated_data["avatar"])
+                else :
+                    profile = UserProfile(user=self.object, avatar = serializer.validated_data["avatar"])
+
                 profile.save()
             except Exception as e:
                 profile = UserProfile(user=self.object, phone_number = serializer.data.get("phone_number"))
