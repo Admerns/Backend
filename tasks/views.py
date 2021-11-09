@@ -9,6 +9,7 @@ from rest_framework.permissions import IsAuthenticated
 # Create your views here.
 class TasksAPI(generics.GenericAPIView):
     serializer_class = Task_CreateSerializer
+    permission_classes = (IsAuthenticated,)
 
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
