@@ -9,7 +9,7 @@ urlpatterns = [
     
     path('register/', RegisterAPI.as_view(), name='register'),
     path('login/', LoginAPI.as_view(), name='login'),
-    path('edit/', EditAPI.as_view(), name='edit'),
+    path('edit-profile/', EditAPI.as_view(), name='edit-profile'),
     path('user/', CurrentUserAPI.as_view()),
     path('logout/', knox_views.LogoutView.as_view(), name='logout'),
     path('change-password/', ChangePasswordView.as_view(), name='change-password'),

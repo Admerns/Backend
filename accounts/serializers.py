@@ -1,4 +1,5 @@
 from enum import unique
+from django.http import request
 from rest_framework import serializers
 from django.contrib.auth.models import User
 from accounts.models import UserProfile
@@ -24,28 +25,13 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = ('id', 'username', 'email', 'first_name', 'last_name', 'phone_number', 'avatar')
 
+        
 # Register Serializer
 class RegisterSerializer(serializers.ModelSerializer):
-
-    email = EmailField(required = True)
-    password = serializers.CharField(
-        label = "password",
-        write_only=True,
-        required=True,
-        help_text='Enter your password',
-        style={'input_type': 'password', 'placeholder': 'Password'}
-    )
-    password2 = serializers.CharField(
-        label = "confirm password",
-        write_only=True,
-        required=True,
-        help_text='Enter your password again',
-        style={'input_type': 'password', 'placeholder': 'Password'}
-    )
-
+    password2 = CharField(label='Confirm Password')
     class Meta:
         model = User
-        fields = ('id', 'username', 'email', 'password', 'password2')
+        fields = ('id', 'username', 'email', 'password', 'password2','first_name', 'last_name')
         extra_kwargs = {
             'password': {'write_only': True},
             'password2': {'write_only': True},
