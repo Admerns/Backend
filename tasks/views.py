@@ -4,6 +4,8 @@ from tasks.models import task
 from .serializers import Task_CreateSerializer, Task_GetSerializer
 from rest_framework.response import Response
 
+from rest_framework.permissions import IsAuthenticated 
+
 # Create your views here.
 class TasksAPI(generics.GenericAPIView):
     serializer_class = Task_CreateSerializer
@@ -18,7 +20,7 @@ class TasksAPI(generics.GenericAPIView):
 
 class GetTasksAPI(generics.GenericAPIView):
     serializer_class = Task_GetSerializer
-
+    permission_classes = (IsAuthenticated,)
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data = request.data)
         serializer.is_valid(raise_exception=True)
@@ -30,5 +32,7 @@ class GetTasksAPI(generics.GenericAPIView):
         serializer = (self.get_serializer(tasks, many=True))
         
         return Response(serializer.data)
+
+
 
 
