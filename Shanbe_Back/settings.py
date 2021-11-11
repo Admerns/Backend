@@ -115,6 +115,9 @@ REST_FRAMEWORK = {
 
 }
 
+REST_KNOX = {
+       'TOKEN_TTL': None,  # will create tokens that never expire
+    }
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
