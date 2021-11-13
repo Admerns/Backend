@@ -28,6 +28,9 @@ class GetTasksAPI(generics.GenericAPIView):
 
         if ('task_token' in serializer.data):
             tasks = task.objects.filter(userid = request.user.id , task_token = serializer.data['task_token'])
+        elif ('time' in serializer.data):
+            time = serializer.data['time'].split('-')
+            tasks = task.objects.filter(userid = request.user.id , task_token = serializer.data['task_token'])
         else:
             tasks = task.objects.filter(userid = request.user.id)
         serializer = (self.get_serializer(tasks, many=True))
