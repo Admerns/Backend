@@ -4,6 +4,7 @@ from rest_framework import fields, serializers
 from django.contrib.auth.models import User
 from .models import task
 from rest_framework import viewsets
+from rest_framework.fields import CharField
 
 
 class Task_CreateSerializer(serializers.ModelSerializer):
@@ -48,6 +49,13 @@ class Task_GetSerializer(serializers.ModelSerializer):
             'alarm_check': {'read_only': True, 'required':False},
             'push_notification': {'read_only': True, 'required':False}
         }
+
+class Task_FinishSerializer(serializers.ModelSerializer):
+    status = CharField(max_length=10, required=True)
+    class Meta:
+        model = task
+        fields = ('id', 'task_token' , 'status')
+        
 
 class Task_Get_DaySerializer(serializers.ModelSerializer):
     class Meta:

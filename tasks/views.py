@@ -2,7 +2,7 @@ from rest_framework import generics, status
 from rest_framework.fields import empty
 
 from tasks.models import task
-from .serializers import Task_CreateSerializer, Task_GetSerializer, Task_EditSerializer, Task_Get_DaySerializer
+from .serializers import Task_CreateSerializer, Task_GetSerializer, Task_EditSerializer, Task_Get_DaySerializer, Task_FinishSerializer
 from rest_framework.response import Response
 
 from rest_framework.permissions import IsAuthenticated 
@@ -87,6 +87,49 @@ class EditTasksAPI(generics.UpdateAPIView):
                 'data': []
             }
 
+            return Response(response)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class FinishTaskAPI(generics.UpdateAPIView):
+    serializer_class = Task_FinishSerializer
+    permission_classes = (IsAuthenticated,)
+
+    def update(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data = request.data)
+
+        if serializer.is_valid():
+            if ('task_token' in serializer.data):
+                finishedTask = task.objects.filter(userid = request.user.id , task_token = serializer.data['task_token']).first()
+            else:
+                response = {
+                    'message': 'task_token is required.',
+                }
+                return Response(response)
+
+            if (finishedTask == None):
+                response = {
+                    'message': 'Task not found.',
+                }
+                return Response(response)
+            
+            if (serializer.data['status'] == "done"):
+                finishedTask.status = 'done'
+            elif (serializer.data['status'] == "pending"):
+                finishedTask.status = 'pending'
+            else :
+                response = {
+                    'message': 'Status not defined.',
+                }
+                return Response(response)
+            finishedTask.save()
+
+            response = {
+                'status': 'success',
+                'code': status.HTTP_200_OK,
+                'message': 'Task finished successfully',
+                'data': []
+            }
             return Response(response)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
