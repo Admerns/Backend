@@ -1,10 +1,12 @@
 from rest_framework import generics, status
+from rest_framework.fields import empty
 
 from tasks.models import task
-from .serializers import Task_CreateSerializer, Task_GetSerializer, Task_EditSerializer
+from .serializers import Task_CreateSerializer, Task_GetSerializer, Task_EditSerializer, Task_Get_DaySerializer
 from rest_framework.response import Response
 
 from rest_framework.permissions import IsAuthenticated 
+from django.db import connection
 
 # Create your views here.
 class TasksAPI(generics.GenericAPIView):
@@ -88,6 +90,44 @@ class EditTasksAPI(generics.UpdateAPIView):
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+class GetTasksDayAPI(generics.GenericAPIView):
+    serializer_class = Task_Get_DaySerializer
+    permission_classes = (IsAuthenticated,)
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data = request.data)
+        serializer.is_valid(raise_exception=True)
 
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT id FROM `tasks` WHERE TRIM(SUBSTRING_INDEX(time,' ',1)) LIKE %s AND userid LIKE %s",
+             [serializer.data['time'][:10], request.user.id])
+            templist = cursor.fetchall()
+
+        templist = list(templist)
+        task_ids = []
+        for i in templist:
+            task_ids.append(i[0])
+
+        tasks = task.objects.filter(userid = request.user.id, id__in = task_ids)
+        serializer = (self.get_serializer(tasks, many=True))
+
+        """Task Approach DONT DELETE"""
+        # task_ids = list(task_ids)
+        # print(task_ids)
+        # for i in range(len(task_ids)):
+        #     temptask = task.objects.filter(userid = request.user.id, task_token = task_ids[i][0])
+        #     tempserializer = (self.get_serializer(temptask, many=True))
+        #     print(tempserializer.data, "SERIALIZER DATA")
+        #     if len(tempserializer.data) == 0:
+        #         task_ids.pop(i)
+        # print(task_ids,"AFTER")
+
+        # tasktoken_temp = task_ids[0][0]
+        # print(task_ids[0][0], '555555555')
+
+        # tasks = task.objects.filter(userid = request.user.id, task_token = 'oRjHivQZMz_lnlD8YNrq1g')
+        # print(tasks,"hhhhhhhhhhh")
+        # serializer = (self.get_serializer(tasks, many=True))
+        # print(serializer.data, "9999999999")
+        return Response(serializer.data)
 
 
