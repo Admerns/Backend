@@ -18,7 +18,7 @@ class task(models.Model):
     title = models.CharField(max_length=500, blank=False)
     time = models.DateTimeField()
     #created_at = models.DateTimeField(auto_now_add=True)
-    #status = models.CharField(max_length=500,blank=False,choices=STATUS_CHOICES, default='pending')
+    status = models.CharField(max_length=500,blank=False,choices=STATUS_CHOICES, default='pending')
     category = models.TextField()
     description = models.TextField()
     alarm_check = models.TextField()

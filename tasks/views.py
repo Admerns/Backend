@@ -46,7 +46,6 @@ class EditTasksAPI(generics.UpdateAPIView):
     def update(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
 
-
         if serializer.is_valid():
             if ('task_token' in serializer.data):
                 editingTask = task.objects.filter(userid = request.user.id , task_token = serializer.data['task_token']).first()
@@ -68,6 +67,8 @@ class EditTasksAPI(generics.UpdateAPIView):
                 editingTask.description = (serializer.data.get("description"))
             if(serializer.data.get("time") != None ):
                 editingTask.time = (serializer.data.get("time"))
+            if(serializer.data.get("status") != None ):
+                editingTask.time = (serializer.data.get("status"))
             if(serializer.data.get("category") != None ):
                 editingTask.category = (serializer.data.get("category"))
             if(serializer.data.get("alarm_check") != None ):
