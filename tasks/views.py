@@ -99,8 +99,8 @@ class GetTasksDayAPI(generics.GenericAPIView):
         serializer.is_valid(raise_exception=True)
 
         with connection.cursor() as cursor:
-            cursor.execute("SELECT id FROM `tasks` WHERE TRIM(SUBSTRING_INDEX(time,' ',1)) LIKE %s AND userid LIKE %s",
-             [serializer.data['time'][:10], request.user.id])
+            cursor.execute("SELECT id FROM `tasks` WHERE TRIM(SUBSTRING_INDEX(alarm_check,'_',1)) LIKE %s AND userid LIKE %s",
+             [serializer.data['alarm_check'][:10], request.user.id])
             templist = cursor.fetchall()
 
         templist = list(templist)

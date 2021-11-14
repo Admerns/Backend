@@ -11,7 +11,10 @@ class Task_CreateSerializer(serializers.ModelSerializer):
         model = task
         fields = ('id', 'user_token', 'task_token', 'title', 'time', 'status', 'category', 'description',
          'alarm_check', 'push_notification')
-        extra_kwargs = {'task_token': {'read_only': True}}
+        extra_kwargs = {
+            'task_token': {'read_only': True},
+            'time': {'required':False},
+        }
 
 class Task_EditSerializer(serializers.ModelSerializer):
     class Meta:
@@ -55,10 +58,10 @@ class Task_Get_DaySerializer(serializers.ModelSerializer):
             'task_token': {'required':False},
             'id': {'required':False},
             'title': {'read_only': True, 'required':False},
-            'time': { 'required':False},
+            'time': { 'required':False, 'required':False},
             'status':{'read_only': True, 'required':False},
             'category': {'read_only': True, 'required':False},
             'description': {'read_only': True, 'required':False},
-            'alarm_check': {'read_only': True, 'required':False},
+            'alarm_check': {'required':False},
             'push_notification': {'read_only': True, 'required':False}
         }
