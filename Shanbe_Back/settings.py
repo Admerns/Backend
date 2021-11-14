@@ -33,6 +33,7 @@ INSTALLED_APPS = [
     'accounts',
     'django_rest_passwordreset',
     'tasks',
+    'events',
 ]
 
 

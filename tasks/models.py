@@ -6,11 +6,19 @@ from secrets import token_urlsafe
 
 # Create your models here.
 class task(models.Model):
+
+    STATUS_CHOICES = (
+        ('done', 'done'),
+        ('pending', 'pending'),
+        ('overdue', 'overdue'),
+    )
     user_token = models.CharField(max_length=500, blank=False, default='')
     task_token = models.CharField(max_length=500, blank=False, default='')
     userid = models.IntegerField(blank=False)
     title = models.CharField(max_length=500, blank=False)
-    time = models.DateTimeField(auto_now_add=True)
+    time = models.DateTimeField()
+    #created_at = models.DateTimeField(auto_now_add=True)
+    status = models.CharField(max_length=500,blank=False,choices=STATUS_CHOICES, default='pending')
     category = models.TextField()
     description = models.TextField()
     alarm_check = models.TextField()
