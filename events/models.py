@@ -3,11 +3,8 @@ from django.contrib.auth.models import User
 from django.db import connection
 from django.forms import ValidationError
 from secrets import token_urlsafe
-# Create your models here.
 
 class event(models.Model):
-
-
     user_token = models.CharField(max_length=500, blank=False, default='')
     event_token = models.CharField(max_length=500, blank=False, default='')
     userid = models.IntegerField(blank=False)
