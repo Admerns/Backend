@@ -21,7 +21,8 @@ class task(models.Model):
     category = models.TextField()
     description = models.TextField()
     alarm_check = models.TextField()
-    push_notification = models.TextField()
+    push_notification = models.TextField(blank=False, default='false')
+    push_alarm = models.TextField(blank=False, default='false')
 
     def set_userid(self):
         with connection.cursor() as cursor:
