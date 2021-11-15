@@ -75,10 +75,10 @@ class EditTasksAPI(generics.UpdateAPIView):
                 editingTask.alarm_check = (serializer.data.get("alarm_check"))
             if(serializer.data.get("push_notification") != None ):
                 editingTask.push_notification = (serializer.data.get("push_notification"))
+            if(serializer.data.get("push_alarm") != None ):
+                editingTask.push_notification = (serializer.data.get("push_alarm"))
 
-                
             editingTask.save()
-
 
             response = {
                 'status': 'success',
