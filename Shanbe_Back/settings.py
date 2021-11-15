@@ -32,6 +32,8 @@ INSTALLED_APPS = [
     'knox',
     'accounts',
     'django_rest_passwordreset',
+    'tasks',
+    'events',
 ]
 
 
@@ -114,6 +116,9 @@ REST_FRAMEWORK = {
 
 }
 
+REST_KNOX = {
+       'TOKEN_TTL': None,  # will create tokens that never expire
+    }
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
@@ -158,3 +163,8 @@ STATIC_URL = '/static/'
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+AUTH_PROFILE_MODULE = 'accounts.UserProfile'
+
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = '/media/'
