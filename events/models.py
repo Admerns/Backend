@@ -29,7 +29,7 @@ class event(models.Model):
         try:
             if not self.userid:
                 self.set_userid()
-            if not self.task_token:
+            if not self.event_token:
                 self.set_event_token()
             return super(event, self).save(*args, **kwargs)
         except:
