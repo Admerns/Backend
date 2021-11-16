@@ -1,12 +1,13 @@
 from rest_framework import generics, status
 from rest_framework.fields import empty
-
+from rest_framework.decorators import api_view
 from tasks.models import task
 from .serializers import Task_CreateSerializer, Task_GetSerializer, Task_EditSerializer, Task_Get_DaySerializer, Task_FinishSerializer
 from rest_framework.response import Response
-
+from .models import task
 from rest_framework.permissions import IsAuthenticated 
 from django.db import connection
+from django.http.response import JsonResponse
 
 # Create your views here.
 class TasksAPI(generics.GenericAPIView):
@@ -152,24 +153,18 @@ class GetTasksDayAPI(generics.GenericAPIView):
         tasks = task.objects.filter(userid = request.user.id, id__in = task_ids)
         serializer = (self.get_serializer(tasks, many=True))
 
-        """Task Approach DONT DELETE"""
-        # task_ids = list(task_ids)
-        # print(task_ids)
-        # for i in range(len(task_ids)):
-        #     temptask = task.objects.filter(userid = request.user.id, task_token = task_ids[i][0])
-        #     tempserializer = (self.get_serializer(temptask, many=True))
-        #     print(tempserializer.data, "SERIALIZER DATA")
-        #     if len(tempserializer.data) == 0:
-        #         task_ids.pop(i)
-        # print(task_ids,"AFTER")
-
-        # tasktoken_temp = task_ids[0][0]
-        # print(task_ids[0][0], '555555555')
-
-        # tasks = task.objects.filter(userid = request.user.id, task_token = 'oRjHivQZMz_lnlD8YNrq1g')
-        # print(tasks,"hhhhhhhhhhh")
-        # serializer = (self.get_serializer(tasks, many=True))
-        # print(serializer.data, "9999999999")
         return Response(serializer.data)
 
-
+@api_view(['DELETE'])
+def DeleteTaskAPI(request, pk):
+    try: 
+        task_ = task.objects.get(pk=pk) 
+    except task.DoesNotExist: 
+        return JsonResponse({'message': 'The task does not exist'}, status=status.HTTP_404_NOT_FOUND) 
+    task.delete(task_)
+    response = {
+        'status': 'success',
+        'code': status.HTTP_200_OK,
+        'message': 'Task deleted successfully',
+    }
+    return Response(response)
