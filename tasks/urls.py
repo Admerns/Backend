@@ -8,5 +8,5 @@ urlpatterns = [
     path('task-edit/', EditTasksAPI.as_view(), name='task-edit'),
     path('task-finish/', FinishTaskAPI.as_view(), name='task-finish'),
     path('task-get-day/', GetTasksDayAPI.as_view(), name='task-get-day'),
-    url(r'^task-delete/(?P<pk>[0-9]+)$', DeleteTaskAPI),
+    path('task-delete/', DeleteTaskAPI.as_view(), name='task-delete'),
 ]

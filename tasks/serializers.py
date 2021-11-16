@@ -58,6 +58,12 @@ class Task_FinishSerializer(serializers.ModelSerializer):
         fields = ('id', 'task_token' , 'status')
         
 
+class Task_DeleteSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = task
+        fields = ('id', 'task_token')
+        
+
 class Task_Get_DaySerializer(serializers.ModelSerializer):
     class Meta:
         model = task
