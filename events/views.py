@@ -13,7 +13,8 @@ class EventsAPI(generics.GenericAPIView):
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        task = serializer.save()
+        event = serializer.save()
+        
         return Response({
-        "task": Event_CreateSerializer(task, context=self.get_serializer_context()).data,
+        "event": Event_CreateSerializer(event, context=self.get_serializer_context()).data,
         })

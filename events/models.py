@@ -37,3 +37,14 @@ class event(models.Model):
 
     class Meta:
         db_table = 'events'
+
+class session (models.Model):
+    limit = models.IntegerField(blank=False)
+    time = models.DateTimeField(auto_now_add=True)
+    event = models.ForeignKey(event, on_delete=models.CASCADE)
+    users = models.ManyToManyField(User)
+
+#
+#class SessionUser(models.Model):
+#    user = models.ForeignKey(User, related_name='reserved_user')
+#    like = models.ForeignKey(User, related_name='reserved_time')
