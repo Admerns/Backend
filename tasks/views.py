@@ -2,7 +2,7 @@ from rest_framework import generics, status
 from rest_framework.fields import empty
 from rest_framework.decorators import api_view
 from tasks.models import task
-from .serializers import Task_CreateSerializer, Task_GetSerializer, Task_EditSerializer, Task_Get_DaySerializer, Task_FinishSerializer
+from .serializers import Task_CreateSerializer, Task_GetSerializer, Task_EditSerializer, Task_Get_DaySerializer, Task_FinishSerializer, Task_DeleteSerializer
 from rest_framework.response import Response
 from .models import task
 from rest_framework.permissions import IsAuthenticated 
@@ -155,16 +155,37 @@ class GetTasksDayAPI(generics.GenericAPIView):
 
         return Response(serializer.data)
 
-@api_view(['DELETE'])
-def DeleteTaskAPI(request, pk):
-    try: 
-        task_ = task.objects.get(pk=pk) 
-    except task.DoesNotExist: 
-        return JsonResponse({'message': 'The task does not exist'}, status=status.HTTP_404_NOT_FOUND) 
-    task.delete(task_)
-    response = {
-        'status': 'success',
-        'code': status.HTTP_200_OK,
-        'message': 'Task deleted successfully',
-    }
-    return Response(response)
+
+class DeleteTaskAPI(generics.GenericAPIView):
+    serializer_class = Task_DeleteSerializer
+    permission_classes = (IsAuthenticated,)
+    def delete(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data = request.data)
+
+        if serializer.is_valid():
+            if ('task_token' in serializer.data):
+                finishedTask = task.objects.filter(userid = request.user.id , task_token = serializer.data['task_token']).first()
+                try:
+                    task.delete(finishedTask)
+                except Exception as e:
+                    response = {
+                        'message': 'Task not found.',
+                    }
+                    return Response(response)
+            else:
+                response = {
+                    'message': 'task_token is required.',
+                }
+                return Response(response)
+                
+        
+
+            response = {
+                'status': 'success',
+                'code': status.HTTP_200_OK,
+                'message': 'Task deleted successfully',
+                'data': []
+            }
+            return Response(response)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
