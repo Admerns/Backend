@@ -17,7 +17,7 @@ class Event_CreateSerializer(serializers.ModelSerializer):
     class Meta:
         
         model = event
-        fields = ('id', 'user_token', 'event_token', 'limit', 'title', 'time', 'privacy',
+        fields = ('id', 'user_token', 'event_token', 'title', 'time', 'privacy',
          'category', 'description', 'isVirtual', 'location' , 'sessions')
         extra_kwargs = {
             'event_token': {'read_only': True},
@@ -29,9 +29,9 @@ class Event_CreateSerializer(serializers.ModelSerializer):
         sessions_data = validated_data.pop('sessions')
         e = event.objects.create(**validated_data)
         for session_data in sessions_data:
-            session_data = session_data.split("-")
+            session_data = session_data.split("_")
             print (session_data)
-            session_info ={'limit':session_data[0],'time':session_data[1]+"-"+session_data[2]}
+            session_info ={'limit':session_data[0],'time':session_data[1]+"_"+session_data[2]}
             session.objects.create(event=e, **session_info)
         return e
 

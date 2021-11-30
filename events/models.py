@@ -8,7 +8,6 @@ class event(models.Model):
     user_token = models.CharField(max_length=500, blank=False, default='')
     event_token = models.CharField(max_length=500, blank=False, default='')
     userid = models.IntegerField(blank=False)
-    limit = models.IntegerField(blank=False)
     title = models.CharField(max_length=500, blank=False)
     time = models.DateTimeField(auto_now_add=True)
     privacy = models.BooleanField(default=False)
@@ -40,7 +39,7 @@ class event(models.Model):
 
 class session (models.Model):
     limit = models.IntegerField(blank=False)
-    time = models.DateTimeField(auto_now_add=True)
+    time = models.TextField()
     event = models.ForeignKey(event, on_delete=models.CASCADE)
     users = models.ManyToManyField(User)
 
