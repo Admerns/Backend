@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from .serializers import Event_CreateSerializer
+from .serializers import Event_CreateSerializer, SessionSerializer
 from rest_framework import generics, status
 from rest_framework.fields import empty
 from rest_framework.response import Response
@@ -13,7 +13,29 @@ class EventsAPI(generics.GenericAPIView):
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        task = serializer.save()
-        return Response({
-        "task": Event_CreateSerializer(task, context=self.get_serializer_context()).data,
-        })
+        event = serializer.save()
+        return Response(request.data, status=status.HTTP_201_CREATED)
+
+        #return Sessions(request, event)
+def Sessions(request, event):
+    
+    for session in request.data.getlist('sessions'):
+        print(session)
+        data={'time':'sad','limit':'12','event_id':event.id}
+        print(data)
+        serializer = SessionSerializer(data = data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        response = {
+                    'status': 'success',
+                    'code': status.HTTP_200_OK,
+                    'message': 'Password updated successfully',
+                    'data': []
+                }
+
+        return Response(response)
+
+class SessionsAPI(generics.GenericAPIView):
+    serializer_class = SessionSerializer
+    def post(self, request, *args, **kwargs):
+        print("ll")
