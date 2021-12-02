@@ -39,6 +39,9 @@ class GetEventsAPI(generics.GenericAPIView):
         
         serializer = (self.get_serializer(events, many=True))
         return Response(serializer.data)
+
+
+        
 # def Sessions(request, event):
     
 #     for session in request.data.getlist('sessions'):
