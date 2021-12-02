@@ -10,6 +10,11 @@ class SessionSerializer(serializers.ModelSerializer):
         model = session
         fields = ('id', 'event_id' , 'time', 'limit')
 
+class Event_EnterSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = session
+        fields = ('id', 'event_token')
+
 class Event_CreateSerializer(serializers.ModelSerializer):
     
     sessions = serializers.ListField(child = serializers.CharField())
@@ -61,4 +66,20 @@ class Event_DeleteSerializer(serializers.ModelSerializer):
     class Meta:
         model = event
         fields = ('id', 'event_token')
+
+class Event_GetSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = event
+        fields = ('id', 'event_token', 'title', 'time', 'category', 'description',
+         'location')
+        extra_kwargs = {
+            'event_token': {'read_only': True, 'required':False},
+            'id': {'required':False},
+            'title': {'read_only': True, 'required':False},
+            'time': {'read_only': True, 'required':False},
+            'status':{'read_only': True, 'required':False},
+            'category': {'read_only': True, 'required':False},
+            'description': {'read_only': True, 'required':False},
+            'location': {'read_only': True, 'required':False},
+        }
         
