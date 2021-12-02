@@ -17,7 +17,7 @@ class Event_EnterSerializer(serializers.ModelSerializer):
 
 class Event_CreateSerializer(serializers.ModelSerializer):
     
-    sessions = serializers.ListField(child = serializers.CharField())
+    sessions = serializers.ListField(child = serializers.CharField(), write_only=True)
 
     class Meta:
         
@@ -39,9 +39,6 @@ class Event_CreateSerializer(serializers.ModelSerializer):
             session_info ={'limit':session_data[0],'time':session_data[1]+"_"+session_data[2]}
             session.objects.create(event=e, **session_info)
         return e
-
-    def get_sessions(self, data):
-        return data.pop('sessions')
 
 class Event_EditSerializer(serializers.ModelSerializer):
     sessions = serializers.ListField(child=serializers.CharField()) #serializers.JSONField
