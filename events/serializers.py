@@ -12,7 +12,7 @@ class SessionSerializer(serializers.ModelSerializer):
 
 class Event_EnterSerializer(serializers.ModelSerializer):
     class Meta:
-        model = session
+        model = event
         fields = ('id', 'event_token')
 
 class Event_CreateSerializer(serializers.ModelSerializer):
