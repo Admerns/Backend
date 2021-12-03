@@ -1,6 +1,6 @@
 from django.db.models.query import QuerySet
 from django.shortcuts import render
-from .serializers import Event_CreateSerializer, Event_GetSerializer, SessionSerializer, Event_EnterSerializer
+from .serializers import Event_CreateSerializer, Event_GetSerializer, Event_SessionsSerializer, SessionSerializer
 from rest_framework import generics, status
 from rest_framework.fields import empty
 from rest_framework.response import Response
@@ -18,16 +18,16 @@ class EventsAPI(generics.GenericAPIView):
         event = serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-class EnterEventAPI(generics.GenericAPIView):
-    serializer_class = Event_EnterSerializer
-    permission_classes = (IsAuthenticated,)
+class Event_SessionsAPI(generics.GenericAPIView):
+    serializer_class = Event_SessionsSerializer
+
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         e = event.objects.filter(event_token = serializer.data['event_token']).first()
-
-        event = serializer.save()
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+        serializer = (self.get_serializer(e))
+        
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 class GetEventsAPI(generics.GenericAPIView):
     serializer_class = Event_GetSerializer

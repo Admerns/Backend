@@ -10,10 +10,23 @@ class SessionSerializer(serializers.ModelSerializer):
         model = session
         fields = ('id', 'event_id' , 'time', 'limit')
 
-class Event_EnterSerializer(serializers.ModelSerializer):
+class Event_SessionsSerializer(serializers.ModelSerializer):
+
+    session_set = SessionSerializer(many=True, read_only=True)
     class Meta:
         model = event
-        fields = ('id', 'event_token')
+        fields = ('id', 'event_token', 'title', 'time', 'category', 'description',
+         'location','session_set')
+        extra_kwargs = {
+            'event_token': {'required':False},
+            'id': {'required':False},
+            'title': {'read_only': True, 'required':False},
+            'time': {'read_only': True, 'required':False},
+            'status':{'read_only': True, 'required':False},
+            'category': {'read_only': True, 'required':False},
+            'description': {'read_only': True, 'required':False},
+            'location': {'read_only': True, 'required':False},
+        }
 
 class Event_CreateSerializer(serializers.ModelSerializer):
     
