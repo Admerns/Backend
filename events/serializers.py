@@ -48,7 +48,7 @@ class Event_CreateSerializer(serializers.ModelSerializer):
         e = event.objects.create(**validated_data)
         for session_data in sessions_data:
             session_data = session_data.split("_")
-            print (session_data)
+            #print (session_data)
             session_info ={'limit':session_data[0],'time':session_data[1]+"_"+session_data[2]}
             session.objects.create(event=e, **session_info)
         return e
@@ -57,12 +57,11 @@ class Event_EditSerializer(serializers.ModelSerializer):
     sessions = serializers.ListField(child=serializers.CharField()) #serializers.JSONField
 
     class Meta:
-        
         model = event
         fields = ('id', 'user_token', 'event_token', 'title', 'privacy',
          'category', 'description', 'isVirtual', 'location' , 'sessions')
         extra_kwargs = {
-            'event_token': {'read_only': True},
+            'user_token': {'read_only': True},
             'title': {'required':False},
             'privacy': {'required':False},
             'category': {'required':False},

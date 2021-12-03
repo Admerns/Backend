@@ -1,10 +1,10 @@
 from django.urls import path, include
-
-
-from .views import Event_SessionsAPI, EventsAPI, GetEventsAPI
+from .views import EventsAPI, Event_SessionsAPI, GetEventsAPI, DeleteEventsAPI, EditEventsAPI
 
 urlpatterns = [
     path('event-create/', EventsAPI.as_view(), name='event-create'),
     path('event-get/', GetEventsAPI.as_view(), name='event-get'),
-    path('event-sessions/', Event_SessionsAPI.as_view(), name='event-sessions'),
+    path('enter-event-token/', Event_SessionsAPI.as_view(), name='enter-event-token'),
+    path('event-delete/', DeleteEventsAPI.as_view(), name='event-delete'),
+    path('event-edit/', EditEventsAPI.as_view(), name='event-edit'),
 ]

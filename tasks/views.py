@@ -75,7 +75,7 @@ class EditTasksAPI(generics.UpdateAPIView):
             if(serializer.data.get("push_notification") != None ):
                 editingTask.push_notification = (serializer.data.get("push_notification"))
             if(serializer.data.get("push_alarm") != None ):
-                editingTask.push_notification = (serializer.data.get("push_alarm"))
+                editingTask.push_alarm = (serializer.data.get("push_alarm"))
 
             editingTask.save()
 
