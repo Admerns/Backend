@@ -1,6 +1,6 @@
 from django.db.models.query import QuerySet
 from django.shortcuts import render
-from .serializers import Event_CreateSerializer, Event_GetSerializer, SessionSerializer, Event_SessionsSerializer, Event_DeleteSerializer, Event_EditSerializer
+from .serializers import Event_CreateSerializer, Event_GetSerializer, SessionSerializer, Event_SessionsSerializer, Event_DeleteSerializer, Event_EditSerializer, Event_SearchSerializer
 from rest_framework import generics, status
 from rest_framework.fields import empty
 from rest_framework.response import Response
@@ -137,6 +137,58 @@ class EditEventsAPI(generics.UpdateAPIView):
             return Response(response)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class Event_SearchAPI(generics.GenericAPIView):
+    serializer_class = Event_SearchSerializer
+    permission_classes = (IsAuthenticated,)
+    def post(self, request, *args, **kwargs):
+
+        serializer = self.get_serializer(data = request.data)
+        serializer.is_valid(raise_exception=True)
+
+        templist = []
+
+        if serializer.data.get("title") != None:
+            with connection.cursor() as cursor:
+                cursor.execute("SELECT id FROM `events` WHERE title LIKE %s", [serializer.data.get("title")])
+                templist = cursor.fetchall()
+
+        if serializer.data.get("privacy") != None:
+            with connection.cursor() as cursor:
+                cursor.execute("SELECT id FROM `events` WHERE privacy LIKE %s", [serializer.data.get("privacy")])
+                templist = cursor.fetchall()
+
+        if serializer.data.get("category") != None:
+            with connection.cursor() as cursor:
+                cursor.execute("SELECT id FROM `events` WHERE category LIKE %s", [serializer.data.get("category")])
+                templist = cursor.fetchall()
+
+        if serializer.data.get("isVirtual") != None:
+            with connection.cursor() as cursor:
+                cursor.execute("SELECT id FROM `events` WHERE isVirtual LIKE %s", [serializer.data.get("isVirtual")])
+                templist = cursor.fetchall()
+
+        if serializer.data.get("location") != None:
+            with connection.cursor() as cursor:
+                cursor.execute("SELECT id FROM `events` WHERE location LIKE %s", [serializer.data.get("location")])
+                templist = cursor.fetchall()
+
+
+
+        templist = list(templist)
+        event_ids = []
+        for i in templist:
+            event_ids.append(i[0])
+        
+        events = event.objects.filter(id__in = event_ids)
+        serializer = (self.get_serializer(events, many=True))
+
+        # events = event.objects.filter(title = serializer.data.get("title"), privacy = serializer.data.get("privacy"),
+        # category = serializer.data.get("category"), isVirtual = serializer.data.get("isVirtual"), location = serializer.data.get("location"))
+        
+        # serializer = (self.get_serializer(events, many=True))
+
+        return Response(serializer.data)
 
 
 # def Sessions(request, event):

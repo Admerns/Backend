@@ -20,12 +20,12 @@ class Event_SessionsSerializer(serializers.ModelSerializer):
         extra_kwargs = {
             'event_token': {'required':False},
             'id': {'required':False},
-            'title': {'read_only': True, 'required':False},
-            'time': {'read_only': True, 'required':False},
-            'status':{'read_only': True, 'required':False},
-            'category': {'read_only': True, 'required':False},
-            'description': {'read_only': True, 'required':False},
-            'location': {'read_only': True, 'required':False},
+            'title': {'required':False},
+            'time': {'required':False},
+            'status':{'required':False},
+            'category': {'required':False},
+            'description': {'required':False},
+            'location': {'required':False},
         }
 
 class Event_CreateSerializer(serializers.ModelSerializer):
@@ -82,13 +82,30 @@ class Event_GetSerializer(serializers.ModelSerializer):
         fields = ('id', 'event_token', 'title', 'time', 'category', 'description',
          'location')
         extra_kwargs = {
-            'event_token': {'read_only': True, 'required':False},
+            'event_token': {'required':False},
             'id': {'required':False},
-            'title': {'read_only': True, 'required':False},
-            'time': {'read_only': True, 'required':False},
-            'status':{'read_only': True, 'required':False},
-            'category': {'read_only': True, 'required':False},
+            'title': {'required':False},
+            'time': {'required':False},
+            'status':{'required':False},
+            'category': {'required':False},
+            'description': {'required':False},
+            'location': {'required':False},
+        }
+
+class Event_SearchSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = event
+        fields = ('id', 'event_token', 'title', 'time', 'privacy',
+         'category', 'description', 'isVirtual', 'location')
+        extra_kwargs = {
+            'event_token': {'read_only': True, 'required':False},
+            'id': {'read_only': True, 'required':False},
+            'title': {'required':False},
+            'time': {'required':False},
+            'privacy': {'required':False},
+            'category': {'required':False},
+            'isVirtual': {'required':False},
             'description': {'read_only': True, 'required':False},
-            'location': {'read_only': True, 'required':False},
+            'location': {'required':False},
         }
         
