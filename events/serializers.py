@@ -10,10 +10,23 @@ class SessionSerializer(serializers.ModelSerializer):
         model = session
         fields = ('id', 'event_id' , 'time', 'limit')
 
-class Event_EnterSerializer(serializers.ModelSerializer):
+class Event_SessionsSerializer(serializers.ModelSerializer):
+
+    session_set = SessionSerializer(many=True, read_only=True)
     class Meta:
         model = event
-        fields = ('id', 'event_token')
+        fields = ('id', 'event_token', 'title', 'time', 'category', 'description',
+         'location','session_set')
+        extra_kwargs = {
+            'event_token': {'required':False},
+            'id': {'required':False},
+            'title': {'required':False},
+            'time': {'required':False},
+            'status':{'required':False},
+            'category': {'required':False},
+            'description': {'required':False},
+            'location': {'required':False},
+        }
 
 class Event_CreateSerializer(serializers.ModelSerializer):
     
@@ -35,7 +48,7 @@ class Event_CreateSerializer(serializers.ModelSerializer):
         e = event.objects.create(**validated_data)
         for session_data in sessions_data:
             session_data = session_data.split("_")
-            print (session_data)
+            #print (session_data)
             session_info ={'limit':session_data[0],'time':session_data[1]+"_"+session_data[2]}
             session.objects.create(event=e, **session_info)
         return e
@@ -44,12 +57,11 @@ class Event_EditSerializer(serializers.ModelSerializer):
     sessions = serializers.ListField(child=serializers.CharField()) #serializers.JSONField
 
     class Meta:
-        
         model = event
         fields = ('id', 'user_token', 'event_token', 'title', 'privacy',
          'category', 'description', 'isVirtual', 'location' , 'sessions')
         extra_kwargs = {
-            'event_token': {'read_only': True},
+            'user_token': {'read_only': True},
             'title': {'required':False},
             'privacy': {'required':False},
             'category': {'required':False},
@@ -70,13 +82,30 @@ class Event_GetSerializer(serializers.ModelSerializer):
         fields = ('id', 'event_token', 'title', 'time', 'category', 'description',
          'location')
         extra_kwargs = {
-            'event_token': {'read_only': True, 'required':False},
+            'event_token': {'required':False},
             'id': {'required':False},
-            'title': {'read_only': True, 'required':False},
-            'time': {'read_only': True, 'required':False},
-            'status':{'read_only': True, 'required':False},
-            'category': {'read_only': True, 'required':False},
+            'title': {'required':False},
+            'time': {'required':False},
+            'status':{'required':False},
+            'category': {'required':False},
+            'description': {'required':False},
+            'location': {'required':False},
+        }
+
+class Event_SearchSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = event
+        fields = ('id', 'event_token', 'title', 'time', 'privacy',
+         'category', 'description', 'isVirtual', 'location')
+        extra_kwargs = {
+            'event_token': {'read_only': True, 'required':False},
+            'id': {'read_only': True, 'required':False},
+            'title': {'required':False},
+            'time': {'required':False},
+            'privacy': {'required':False},
+            'category': {'required':False},
+            'isVirtual': {'required':False},
             'description': {'read_only': True, 'required':False},
-            'location': {'read_only': True, 'required':False},
+            'location': {'required':False},
         }
         
