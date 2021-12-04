@@ -38,12 +38,19 @@ class event(models.Model):
         db_table = 'events'
 
 class session (models.Model):
+    session_token = models.CharField(max_length=500, blank=False, default='')
     limit = models.IntegerField(blank=False)
     time = models.TextField()
     event = models.ForeignKey(event, on_delete=models.CASCADE)
     users = models.ManyToManyField(User)
 
-#
-#class SessionUser(models.Model):
-#    user = models.ForeignKey(User, related_name='reserved_user')
-#    like = models.ForeignKey(User, related_name='reserved_time')
+    def set_session_token(self):
+        self.session_token = token_urlsafe(16)
+    
+    def save(self, *args, **kwargs):
+        try:
+            if not self.session_token:
+                self.set_session_token()
+            return super(session, self).save(*args, **kwargs)
+        except:
+            raise ValidationError("Session token initialization error!")

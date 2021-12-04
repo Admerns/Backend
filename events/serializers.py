@@ -8,7 +8,7 @@ from .models import event, session
 class SessionSerializer(serializers.ModelSerializer):
     class Meta:
         model = session
-        fields = ('id', 'event_id' , 'time', 'limit')
+        fields = ('id', 'session_token', 'event_id' , 'time', 'limit')
 
 class Event_SessionsSerializer(serializers.ModelSerializer):
 

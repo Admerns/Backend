@@ -1,6 +1,6 @@
 from django.db.models.query import QuerySet
 from django.shortcuts import render
-from .serializers import Event_CreateSerializer, Event_GetSerializer, SessionSerializer, Event_SessionsSerializer, Event_DeleteSerializer, Event_EditSerializer, Event_SearchSerializer
+from .serializers import Event_CreateSerializer, Event_GetSerializer, Event_SessionsSerializer, Event_DeleteSerializer, Event_EditSerializer, Event_SearchSerializer
 from rest_framework import generics, status
 from rest_framework.fields import empty
 from rest_framework.response import Response
@@ -17,7 +17,7 @@ class EventsAPI(generics.GenericAPIView):
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        event = serializer.save()
+        serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 class Event_SessionsAPI(generics.GenericAPIView):
@@ -76,7 +76,6 @@ class DeleteEventsAPI(generics.GenericAPIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         
 
-
 class EditEventsAPI(generics.UpdateAPIView):
     serializer_class = Event_EditSerializer
     permission_classes = (IsAuthenticated,)
@@ -115,8 +114,9 @@ class EditEventsAPI(generics.UpdateAPIView):
                 event_editing.sessions = (serializer.data.get("sessions"))
             
             event_editing.save()
-
-            # with connection.cursor() as cursor:   """dont delete"""
+            
+            """dont delete"""
+            # with connection.cursor() as cursor:   
             #     cursor.execute("DELETE FROM events_session WHERE event_id = %s", [event_editing.id])
 
             temp_sessions = serializer.data.get("sessions")
@@ -171,8 +171,6 @@ class Event_SearchAPI(generics.GenericAPIView):
                 cursor.execute("SELECT id FROM `events` WHERE location LIKE %s", [serializer.data.get("location")])
                 templist = cursor.fetchall()
 
-
-
         templist = list(templist)
         event_ids = []
         for i in templist:
@@ -187,27 +185,3 @@ class Event_SearchAPI(generics.GenericAPIView):
         # serializer = (self.get_serializer(events, many=True))
 
         return Response(serializer.data)
-
-
-# def Sessions(request, event):
-    
-#     for session in request.data.getlist('sessions'):
-#         print(session)
-#         data={'time':'sad','limit':'12','event_id':event.id}
-#         print(data)
-#         serializer = SessionSerializer(data = data)
-#         serializer.is_valid(raise_exception=True)
-#         serializer.save()
-#         response = {
-#                     'status': 'success',
-#                     'code': status.HTTP_200_OK,
-#                     'message': 'Password updated successfully',
-#                     'data': []
-#                 }
-
-#         return Response(response)
-
-# class SessionsAPI(generics.GenericAPIView):
-#     serializer_class = SessionSerializer
-#     def post(self, request, *args, **kwargs):
-#         print("ll")
