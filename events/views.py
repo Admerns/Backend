@@ -116,10 +116,8 @@ class EditEventsAPI(generics.UpdateAPIView):
             
             event_editing.save()
 
-            #print(serializer.data.get("sessions") , "5555555555")
-
-            with connection.cursor() as cursor:
-                cursor.execute("DELETE FROM events_session WHERE event_id = %s", [event_editing.id])
+            # with connection.cursor() as cursor:   """dont delete"""
+            #     cursor.execute("DELETE FROM events_session WHERE event_id = %s", [event_editing.id])
 
             temp_sessions = serializer.data.get("sessions")
             for se in temp_sessions:
