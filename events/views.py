@@ -1,6 +1,7 @@
 from django.db.models.query import QuerySet
 from django.shortcuts import render
-from .serializers import Event_CreateSerializer, Event_GetSerializer, Event_SessionsSerializer, Event_DeleteSerializer, Event_EditSerializer, Event_SearchSerializer
+from .serializers import Event_CreateSerializer, Event_GetSerializer, Event_SessionsSerializer, Event_DeleteSerializer
+from .serializers import Event_EditSerializer, Event_SearchSerializer, Session_DeleteSerializer, Session_GetSerializer
 from rest_framework import generics, status
 from rest_framework.fields import empty
 from rest_framework.response import Response
@@ -114,7 +115,7 @@ class EditEventsAPI(generics.UpdateAPIView):
                 event_editing.sessions = (serializer.data.get("sessions"))
             
             event_editing.save()
-            
+
             """dont delete"""
             # with connection.cursor() as cursor:   
             #     cursor.execute("DELETE FROM events_session WHERE event_id = %s", [event_editing.id])
@@ -184,4 +185,48 @@ class Event_SearchAPI(generics.GenericAPIView):
         
         # serializer = (self.get_serializer(events, many=True))
 
+        return Response(serializer.data)
+
+class DeleteSessionsAPI(generics.GenericAPIView):
+    serializer_class = Session_DeleteSerializer
+    permission_classes = (IsAuthenticated,)
+    def delete(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data = request.data)
+
+        if serializer.is_valid():
+            if ('session_token' in serializer.data):
+                sessionselect = session.objects.filter(session_token = serializer.data['session_token']).first()
+                try:
+                    session.delete(sessionselect)
+                except Exception as e:
+                    response = {
+                        'message': 'Session not found.',
+                    }
+                    return Response(response)
+            else:
+                response = {
+                    'message': 'session_token is required.',
+                }
+                return Response(response)
+                
+            response = {
+                'status': 'success',
+                'code': status.HTTP_200_OK,
+                'message': 'Session deleted successfully',
+                'data': []
+            }
+            return Response(response)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class GetSessionssAPI(generics.GenericAPIView):
+    serializer_class = Session_GetSerializer
+    def get(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data = request.data)
+        serializer.is_valid(raise_exception=True)
+
+        sessions = session.objects.all()
+        
+        serializer = (self.get_serializer(sessions, many=True))
         return Response(serializer.data)
