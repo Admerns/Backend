@@ -1,3 +1,4 @@
+from django.contrib.auth.models import User
 from django.db.models.query import QuerySet
 from django.shortcuts import render
 from .serializers import Event_CreateSerializer, Event_GetSerializer, Event_SessionsSerializer, Event_DeleteSerializer
@@ -196,13 +197,24 @@ class DeleteSessionsAPI(generics.GenericAPIView):
         if serializer.is_valid():
             if ('session_token' in serializer.data):
                 sessionselect = session.objects.filter(session_token = serializer.data['session_token']).first()
-                try:
-                    session.delete(sessionselect)
-                except Exception as e:
+                eventselect = sessionselect.event
+                userselect = eventselect.userid
+                if (userselect == request.user.id):
+
+                    try:
+                        session.delete(sessionselect)
+                    except Exception as e:
+                        response = {
+                            'message': 'Session not found.',
+                        }
+                        return Response(response)
+                
+                else:
                     response = {
-                        'message': 'Session not found.',
-                    }
+                            'message': 'User not allowed.',
+                        }
                     return Response(response)
+
             else:
                 response = {
                     'message': 'session_token is required.',
