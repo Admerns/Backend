@@ -8,7 +8,7 @@ from .models import event, session
 class SessionSerializer(serializers.ModelSerializer):
     class Meta:
         model = session
-        fields = ('id', 'event_id' , 'time', 'limit')
+        fields = ('id', 'session_token', 'event_id' , 'time', 'limit')
 
 class Event_SessionsSerializer(serializers.ModelSerializer):
 
@@ -108,4 +108,22 @@ class Event_SearchSerializer(serializers.ModelSerializer):
             'description': {'read_only': True, 'required':False},
             'location': {'required':False},
         }
-        
+
+class Session_DeleteSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = session
+        fields = ('id', 'session_token')
+
+class Session_GetSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = session
+        fields = ('id', 'session_token', 'limit', 'time', 'event', 'users')
+        extra_kwargs = {
+            'session_token': {'required':False},
+            'id': {'required':False},
+            'limit': {'required':False},
+            'time': {'required':False},
+            'status':{'required':False},
+            'event': {'required':False},
+            'users': {'required':False},
+        }
