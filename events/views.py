@@ -45,6 +45,17 @@ class GetEventsAPI(generics.GenericAPIView):
         serializer = (self.get_serializer(events, many=True))
         return Response(serializer.data)
 
+class GetCreatedEventsAPI(generics.GenericAPIView):
+    serializer_class = Event_GetSerializer
+    permission_classes = (IsAuthenticated,)
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data = request.data)
+        serializer.is_valid(raise_exception=True)
+
+        events = event.objects.filter(userid=request.user.id)
+        
+        serializer = (self.get_serializer(events, many=True))
+        return Response(serializer.data)
 
 class DeleteEventsAPI(generics.GenericAPIView):
     serializer_class = Event_DeleteSerializer
@@ -150,7 +161,7 @@ class Event_SearchAPI(generics.GenericAPIView):
         _location = serializer.data.get("location")
         _title = serializer.data.get("title")
         _time = serializer.data.get("s_time")
-        _events = event.objects.all()
+        _events = event.objects.filter(privacy=0)
 
         if _category:
             q = event.objects.filter(category=_category)
@@ -181,8 +192,7 @@ class Event_SearchAPI(generics.GenericAPIView):
                 sessions = session.objects.filter(id__in = session_ids)
                 if sessions:
                     events.add(e)
-            print(events)
-            
+
             serializer = (self.get_serializer(events, many=True))
 
             return Response(serializer.data)
@@ -241,7 +251,6 @@ class JoinSessionssAPI(generics.GenericAPIView):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         sessionselect = session.objects.filter(session_token = serializer.data['session_token']).first()
-        print (sessionselect.users).filter(id=request.user.id)
         if sessionselect.users.filter(id=request.user.id).exists():
             response = {
                 'message': 'user already in session.',
@@ -250,6 +259,7 @@ class JoinSessionssAPI(generics.GenericAPIView):
         try :
             sessionselect.users.add(request.user)
             sessionselect.filled = sessionselect.filled + 1
+            sessionselect.save()
             response = {
                     'status': 'success',
                     'code': status.HTTP_200_OK,
@@ -263,14 +273,44 @@ class JoinSessionssAPI(generics.GenericAPIView):
             }
             return Response(response)
 
+class CancelSessionssAPI(generics.GenericAPIView):
+    serializer_class = Session_JoinSerializer
+    permission_classes = (IsAuthenticated,)
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        sessionselect = session.objects.filter(session_token = serializer.data['session_token']).first()
+        try :
+            if (sessionselect.users.filter(id=request.user.id).exists()):
+                sessionselect.users.remove(request.user)
+            else:
+                response = {
+                    'message': 'user not in session.',
+                }
+                return Response(response)
+            sessionselect.filled = sessionselect.filled - 1
+            sessionselect.save()
+            response = {
+                    'status': 'success',
+                    'code': status.HTTP_200_OK,
+                    'message': 'canceled session successfully',
+                    'data': []
+                }
+            return Response(response)
+        except Exception as e:
+            response = {
+                'message': 'Session not found.',
+            }
+            return Response(response)
+
 
 class GetSessionssAPI(generics.GenericAPIView):
     serializer_class = Session_GetSerializer
-    def get(self, request, *args, **kwargs):
+    permission_classes = (IsAuthenticated,)
+    def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data = request.data)
         serializer.is_valid(raise_exception=True)
 
-        sessions = session.objects.all()
-        
+        sessions = request.user.user_sessions.all()
         serializer = (self.get_serializer(sessions, many=True))
         return Response(serializer.data)

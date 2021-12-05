@@ -133,7 +133,7 @@ class Session_DeleteSerializer(serializers.ModelSerializer):
 class Session_GetSerializer(serializers.ModelSerializer):
     class Meta:
         model = session
-        fields = ('id', 'session_token', 'limit', 'time', 'event', 'users')
+        fields = ('id', 'session_token', 'limit', 'time', 'event')
         extra_kwargs = {
             'session_token': {'required':False},
             'id': {'required':False},
@@ -141,7 +141,6 @@ class Session_GetSerializer(serializers.ModelSerializer):
             'time': {'required':False},
             'status':{'required':False},
             'event': {'required':False},
-            'users': {'required':False},
         }
 
 class Session_JoinSerializer(serializers.ModelSerializer):
