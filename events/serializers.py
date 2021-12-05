@@ -127,3 +127,13 @@ class Session_GetSerializer(serializers.ModelSerializer):
             'event': {'required':False},
             'users': {'required':False},
         }
+
+class Session_JoinSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = session
+        fields = ('id', 'session_token')
+        extra_kwargs = {
+            'session_token': {'required':True},
+            'id': {'required':False},
+        }
+

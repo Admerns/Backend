@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 from django.db.models.query import QuerySet
 from django.shortcuts import render
-from .serializers import Event_CreateSerializer, Event_GetSerializer, Event_SessionsSerializer, Event_DeleteSerializer
+from .serializers import Event_CreateSerializer, Event_GetSerializer, Event_SessionsSerializer, Event_DeleteSerializer, Session_JoinSerializer
 from .serializers import Event_EditSerializer, Event_SearchSerializer, Session_DeleteSerializer, Session_GetSerializer
 from rest_framework import generics, status
 from rest_framework.fields import empty
@@ -140,7 +140,6 @@ class EditEventsAPI(generics.UpdateAPIView):
 
 class Event_SearchAPI(generics.GenericAPIView):
     serializer_class = Event_SearchSerializer
-    permission_classes = (IsAuthenticated,)
     def post(self, request, *args, **kwargs):
 
         serializer = self.get_serializer(data = request.data)
@@ -230,6 +229,28 @@ class DeleteSessionsAPI(generics.GenericAPIView):
             return Response(response)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class JoinSessionssAPI(generics.GenericAPIView):
+    serializer_class = Session_JoinSerializer
+    permission_classes = (IsAuthenticated,)
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        sessionselect = session.objects.filter(session_token = serializer.data['session_token']).first()
+        try :
+            sessionselect.users.add(request.user)
+            response = {
+                    'status': 'success',
+                    'code': status.HTTP_200_OK,
+                    'message': 'joined session successfully',
+                    'data': []
+                }
+            return Response(response)
+        except Exception as e:
+            response = {
+                'message': 'Session not found.',
+            }
+            return Response(response)
 
 
 class GetSessionssAPI(generics.GenericAPIView):
