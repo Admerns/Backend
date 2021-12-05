@@ -145,45 +145,43 @@ class Event_SearchAPI(generics.GenericAPIView):
         serializer = self.get_serializer(data = request.data)
         serializer.is_valid(raise_exception=True)
 
-        templist = []
+        _category = serializer.data.get("category")
+        _location = serializer.data.get("location")
+        _title = serializer.data.get("title")
+        _time = serializer.data.get("time")
 
-        if serializer.data.get("title") != None:
-            with connection.cursor() as cursor:
-                cursor.execute("SELECT id FROM `events` WHERE title LIKE %s", [serializer.data.get("title")])
-                templist = cursor.fetchall()
+        if _category:
+            events = event.objects.filter(category=_category)
+        if _category and _location:
+            events = event.objects.filter(category=_category, location=_location)
+        if _category and _title:
+            events = event.objects.filter(category=_category, title__contains=_title)
+        if _category and _time:
+            events = event.objects.filter(category=_category, time__icontains=_time)
+        if _category and  _location and _title:
+            events = event.objects.filter(category=_category, location=_location, title__contains=_title)
+        if _category and  _location and _time:
+            events = event.objects.filter(category = _category, location=_location, time__contains=_time)
+        if _category and  _title and _time:
+            events = event.objects.filter(category = _category, title__contains=_title, time__contains=_time)
+        if _category and _location and _title and _time:
+            events = event.objects.filter(category=_category, location=_location, title__contains=_title, time__contains=_time)
+        if _location:
+            events = event.objects.filter(location=_location)
+        if _location and _title:
+            events = event.objects.filter(location=_location, title__contains=_title)
+        if _location and _time:
+            events = event.objects.filter(location=_location, time__contains=_time)
+        if _location and _title and _time:
+            events = event.objects.filter(location=_location, title__contains=_title, time__contains=_time)
+        if _title:
+            events = event.objects.filter(title__contains=_title)
+        if _title and _time:
+            events = event.objects.filter(title__contains=_title, time__contains=_time)
+        if _time:
+            events = event.objects.filter(time__contains=_time)
 
-        if serializer.data.get("privacy") != None:
-            with connection.cursor() as cursor:
-                cursor.execute("SELECT id FROM `events` WHERE privacy LIKE %s", [serializer.data.get("privacy")])
-                templist = cursor.fetchall()
-
-        if serializer.data.get("category") != None:
-            with connection.cursor() as cursor:
-                cursor.execute("SELECT id FROM `events` WHERE category LIKE %s", [serializer.data.get("category")])
-                templist = cursor.fetchall()
-
-        if serializer.data.get("isVirtual") != None:
-            with connection.cursor() as cursor:
-                cursor.execute("SELECT id FROM `events` WHERE isVirtual LIKE %s", [serializer.data.get("isVirtual")])
-                templist = cursor.fetchall()
-
-        if serializer.data.get("location") != None:
-            with connection.cursor() as cursor:
-                cursor.execute("SELECT id FROM `events` WHERE location LIKE %s", [serializer.data.get("location")])
-                templist = cursor.fetchall()
-
-        templist = list(templist)
-        event_ids = []
-        for i in templist:
-            event_ids.append(i[0])
-        
-        events = event.objects.filter(id__in = event_ids)
         serializer = (self.get_serializer(events, many=True))
-
-        # events = event.objects.filter(title = serializer.data.get("title"), privacy = serializer.data.get("privacy"),
-        # category = serializer.data.get("category"), isVirtual = serializer.data.get("isVirtual"), location = serializer.data.get("location"))
-        
-        # serializer = (self.get_serializer(events, many=True))
 
         return Response(serializer.data)
 
