@@ -29,7 +29,8 @@ class Event_SessionsAPI(generics.GenericAPIView):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         e = event.objects.filter(event_token = serializer.data['event_token']).first()
-        serializer = (self.get_serializer(e))
+        u = User.objects.filter(id = e.userid).first()
+        serializer = (self.get_serializer(e, context={"f_name": u.first_name, "l_name": u.last_name, 'username':u.username}))
         
         return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -182,7 +183,11 @@ class Event_SearchAPI(generics.GenericAPIView):
                     events.add(e)
             print(events)
             
-        serializer = (self.get_serializer(events, many=True))
+            serializer = (self.get_serializer(events, many=True))
+
+            return Response(serializer.data)
+        
+        serializer = (self.get_serializer(_events, many=True))
 
         return Response(serializer.data)
 
