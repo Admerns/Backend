@@ -131,6 +131,7 @@ class Session_DeleteSerializer(serializers.ModelSerializer):
         fields = ('id', 'session_token')
 
 class Session_GetSerializer(serializers.ModelSerializer):
+    event = Event_GetSerializer( read_only=True)
     class Meta:
         model = session
         fields = ('id', 'session_token', 'limit', 'time', 'event')
