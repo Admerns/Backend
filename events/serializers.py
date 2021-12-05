@@ -13,10 +13,19 @@ class SessionSerializer(serializers.ModelSerializer):
 class Event_SessionsSerializer(serializers.ModelSerializer):
 
     session_set = SessionSerializer(many=True, read_only=True)
+    first_name = serializers.SerializerMethodField('get_f_name')
+    last_name = serializers.SerializerMethodField('get_l_name')
+
+    def get_f_name(self,obj):
+        return self.context.get("f_name")
+
+    def get_l_name(self,obj):
+        return self.context.get("l_name")
+
     class Meta:
         model = event
         fields = ('id', 'event_token', 'title', 'time', 'category', 'description',
-         'location','session_set')
+         'location','session_set','first_name', 'last_name')
         extra_kwargs = {
             'event_token': {'required':False},
             'id': {'required':False},
