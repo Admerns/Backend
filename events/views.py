@@ -28,11 +28,17 @@ class Event_SessionsAPI(generics.GenericAPIView):
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        e = event.objects.filter(event_token = serializer.data['event_token']).first()
-        u = User.objects.filter(id = e.userid).first()
-        serializer = (self.get_serializer(e, context={"f_name": u.first_name, "l_name": u.last_name, 'username':u.username}))
-        
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        try:
+            e = event.objects.filter(event_token = serializer.data['event_token']).first()
+            u = User.objects.filter(id = e.userid).first()
+            serializer = (self.get_serializer(e, context={"f_name": u.first_name, "l_name": u.last_name, 'username':u.username}))
+            
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except Exception as e:
+            response = {
+                'message': 'Event not found.',
+            }
+            return Response(response)
 
 class GetEventsAPI(generics.GenericAPIView):
     serializer_class = Event_GetSerializer
