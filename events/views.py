@@ -241,6 +241,7 @@ class JoinSessionssAPI(generics.GenericAPIView):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         sessionselect = session.objects.filter(session_token = serializer.data['session_token']).first()
+        print (sessionselect.users).filter(id=request.user.id)
         if sessionselect.users.filter(id=request.user.id).exists():
             response = {
                 'message': 'user already in session.',
@@ -248,6 +249,7 @@ class JoinSessionssAPI(generics.GenericAPIView):
             return Response(response)
         try :
             sessionselect.users.add(request.user)
+            sessionselect.filled = sessionselect.filled + 1
             response = {
                     'status': 'success',
                     'code': status.HTTP_200_OK,
@@ -256,7 +258,7 @@ class JoinSessionssAPI(generics.GenericAPIView):
                 }
             return Response(response)
         except Exception as e:
-            response = {
+            response = {+
                 'message': 'Session not found.',
             }
             return Response(response)
