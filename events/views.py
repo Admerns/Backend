@@ -148,39 +148,40 @@ class Event_SearchAPI(generics.GenericAPIView):
         _category = serializer.data.get("category")
         _location = serializer.data.get("location")
         _title = serializer.data.get("title")
-        _time = serializer.data.get("time")
+        _time = serializer.data.get("s_time")
+        _events = event.objects.all()
 
         if _category:
-            events = event.objects.filter(category=_category)
-        if _category and _location:
-            events = event.objects.filter(category=_category, location=_location)
-        if _category and _title:
-            events = event.objects.filter(category=_category, title__contains=_title)
-        if _category and _time:
-            events = event.objects.filter(category=_category, time__icontains=_time)
-        if _category and  _location and _title:
-            events = event.objects.filter(category=_category, location=_location, title__contains=_title)
-        if _category and  _location and _time:
-            events = event.objects.filter(category = _category, location=_location, time__contains=_time)
-        if _category and  _title and _time:
-            events = event.objects.filter(category = _category, title__contains=_title, time__contains=_time)
-        if _category and _location and _title and _time:
-            events = event.objects.filter(category=_category, location=_location, title__contains=_title, time__contains=_time)
-        if _location:
-            events = event.objects.filter(location=_location)
-        if _location and _title:
-            events = event.objects.filter(location=_location, title__contains=_title)
-        if _location and _time:
-            events = event.objects.filter(location=_location, time__contains=_time)
-        if _location and _title and _time:
-            events = event.objects.filter(location=_location, title__contains=_title, time__contains=_time)
-        if _title:
-            events = event.objects.filter(title__contains=_title)
-        if _title and _time:
-            events = event.objects.filter(title__contains=_title, time__contains=_time)
-        if _time:
-            events = event.objects.filter(time__contains=_time)
+            q = event.objects.filter(category=_category)
+            _events = (_events&q)
 
+        if _location:
+            q = event.objects.filter(location=_location)
+            _events = (_events&q)
+
+        if _title:
+            q = event.objects.filter(title=_title)
+            _events = (_events&q)
+
+
+        events = set()
+        if _time:
+            for e in _events:
+                with connection.cursor() as cursor:
+                    cursor.execute("SELECT id FROM `events_session` WHERE TRIM(SUBSTRING_INDEX(time,'_',1)) LIKE %s AND event_id LIKE %s",
+                    [_time[:10], e.id])
+                    templist = cursor.fetchall()
+
+                templist = list(templist)
+                session_ids = []
+                for i in templist:
+                    session_ids.append(i[0])
+
+                sessions = session.objects.filter(id__in = session_ids)
+                if sessions:
+                    events.add(e)
+            print(events)
+            
         serializer = (self.get_serializer(events, many=True))
 
         return Response(serializer.data)
