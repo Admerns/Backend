@@ -237,6 +237,11 @@ class JoinSessionssAPI(generics.GenericAPIView):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         sessionselect = session.objects.filter(session_token = serializer.data['session_token']).first()
+        if sessionselect.users.filter(id=request.user.id).exists():
+            response = {
+                'message': 'user already in session.',
+            }
+            return Response(response)
         try :
             sessionselect.users.add(request.user)
             response = {
