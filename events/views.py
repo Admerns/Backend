@@ -30,7 +30,7 @@ class Event_SessionsAPI(generics.GenericAPIView):
         serializer.is_valid(raise_exception=True)
         e = event.objects.filter(event_token = serializer.data['event_token']).first()
         u = User.objects.filter(id = e.userid).first()
-        serializer = (self.get_serializer(e, context={"f_name": u.first_name, "l_name": u.last_name}))
+        serializer = (self.get_serializer(e, context={"f_name": u.first_name, "l_name": u.last_name, 'username':u.username}))
         
         return Response(serializer.data, status=status.HTTP_200_OK)
 
