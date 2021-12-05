@@ -262,22 +262,23 @@ class JoinSessionssAPI(generics.GenericAPIView):
                 'message': 'user already in session.',
             }
             return Response(response)
-        try :
-            sessionselect.users.add(request.user)
-            sessionselect.filled = sessionselect.filled + 1
-            sessionselect.save()
+        
+        if (sessionselect.filled >= sessionselect.limit):
             response = {
-                    'status': 'success',
-                    'code': status.HTTP_200_OK,
-                    'message': 'joined session successfully',
-                    'data': []
-                }
-            return Response(response)
-        except Exception as e:
-            response = {+
-                'message': 'Session not found.',
+            'message': 'no space.',
             }
             return Response(response)
+        sessionselect.users.add(request.user)
+        sessionselect.filled = sessionselect.filled + 1
+        sessionselect.save()
+        response = {
+                'status': 'success',
+                'code': status.HTTP_200_OK,
+                'message': 'joined session successfully',
+                'data': []
+            }
+        return Response(response)
+
 
 class CancelSessionssAPI(generics.GenericAPIView):
     serializer_class = Session_JoinSerializer
