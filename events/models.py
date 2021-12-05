@@ -40,9 +40,10 @@ class event(models.Model):
 class session (models.Model):
     session_token = models.CharField(max_length=500, blank=False, default='')
     limit = models.IntegerField(blank=False)
+    filled = models.IntegerField(blank=False, default=0)
     time = models.TextField()
     event = models.ForeignKey(event, on_delete=models.CASCADE)
-    users = models.ManyToManyField(User)
+    users = models.ManyToManyField(User,related_name='user_sessions')
 
     def set_session_token(self):
         self.session_token = token_urlsafe(16)
