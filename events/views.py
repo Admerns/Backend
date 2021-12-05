@@ -182,7 +182,11 @@ class Event_SearchAPI(generics.GenericAPIView):
                     events.add(e)
             print(events)
             
-        serializer = (self.get_serializer(events, many=True))
+            serializer = (self.get_serializer(events, many=True))
+
+            return Response(serializer.data)
+        
+        serializer = (self.get_serializer(_events, many=True))
 
         return Response(serializer.data)
 
