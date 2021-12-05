@@ -1,6 +1,7 @@
+from django.contrib.auth.models import User
 from django.db.models.query import QuerySet
 from django.shortcuts import render
-from .serializers import Event_CreateSerializer, Event_GetSerializer, Event_SessionsSerializer, Event_DeleteSerializer
+from .serializers import Event_CreateSerializer, Event_GetSerializer, Event_SessionsSerializer, Event_DeleteSerializer, Session_JoinSerializer
 from .serializers import Event_EditSerializer, Event_SearchSerializer, Session_DeleteSerializer, Session_GetSerializer
 from rest_framework import generics, status
 from rest_framework.fields import empty
@@ -139,51 +140,49 @@ class EditEventsAPI(generics.UpdateAPIView):
 
 class Event_SearchAPI(generics.GenericAPIView):
     serializer_class = Event_SearchSerializer
-    permission_classes = (IsAuthenticated,)
     def post(self, request, *args, **kwargs):
 
         serializer = self.get_serializer(data = request.data)
         serializer.is_valid(raise_exception=True)
 
-        templist = []
+        _category = serializer.data.get("category")
+        _location = serializer.data.get("location")
+        _title = serializer.data.get("title")
+        _time = serializer.data.get("s_time")
+        _events = event.objects.all()
 
-        if serializer.data.get("title") != None:
-            with connection.cursor() as cursor:
-                cursor.execute("SELECT id FROM `events` WHERE title LIKE %s", [serializer.data.get("title")])
-                templist = cursor.fetchall()
+        if _category:
+            q = event.objects.filter(category=_category)
+            _events = (_events&q)
 
-        if serializer.data.get("privacy") != None:
-            with connection.cursor() as cursor:
-                cursor.execute("SELECT id FROM `events` WHERE privacy LIKE %s", [serializer.data.get("privacy")])
-                templist = cursor.fetchall()
+        if _location:
+            q = event.objects.filter(location=_location)
+            _events = (_events&q)
 
-        if serializer.data.get("category") != None:
-            with connection.cursor() as cursor:
-                cursor.execute("SELECT id FROM `events` WHERE category LIKE %s", [serializer.data.get("category")])
-                templist = cursor.fetchall()
+        if _title:
+            q = event.objects.filter(title=_title)
+            _events = (_events&q)
 
-        if serializer.data.get("isVirtual") != None:
-            with connection.cursor() as cursor:
-                cursor.execute("SELECT id FROM `events` WHERE isVirtual LIKE %s", [serializer.data.get("isVirtual")])
-                templist = cursor.fetchall()
 
-        if serializer.data.get("location") != None:
-            with connection.cursor() as cursor:
-                cursor.execute("SELECT id FROM `events` WHERE location LIKE %s", [serializer.data.get("location")])
-                templist = cursor.fetchall()
+        events = set()
+        if _time:
+            for e in _events:
+                with connection.cursor() as cursor:
+                    cursor.execute("SELECT id FROM `events_session` WHERE TRIM(SUBSTRING_INDEX(time,'_',1)) LIKE %s AND event_id LIKE %s",
+                    [_time[:10], e.id])
+                    templist = cursor.fetchall()
 
-        templist = list(templist)
-        event_ids = []
-        for i in templist:
-            event_ids.append(i[0])
-        
-        events = event.objects.filter(id__in = event_ids)
+                templist = list(templist)
+                session_ids = []
+                for i in templist:
+                    session_ids.append(i[0])
+
+                sessions = session.objects.filter(id__in = session_ids)
+                if sessions:
+                    events.add(e)
+            print(events)
+            
         serializer = (self.get_serializer(events, many=True))
-
-        # events = event.objects.filter(title = serializer.data.get("title"), privacy = serializer.data.get("privacy"),
-        # category = serializer.data.get("category"), isVirtual = serializer.data.get("isVirtual"), location = serializer.data.get("location"))
-        
-        # serializer = (self.get_serializer(events, many=True))
 
         return Response(serializer.data)
 
@@ -196,13 +195,24 @@ class DeleteSessionsAPI(generics.GenericAPIView):
         if serializer.is_valid():
             if ('session_token' in serializer.data):
                 sessionselect = session.objects.filter(session_token = serializer.data['session_token']).first()
-                try:
-                    session.delete(sessionselect)
-                except Exception as e:
+                eventselect = sessionselect.event
+                userselect = eventselect.userid
+                if (userselect == request.user.id):
+
+                    try:
+                        session.delete(sessionselect)
+                    except Exception as e:
+                        response = {
+                            'message': 'Session not found.',
+                        }
+                        return Response(response)
+                
+                else:
                     response = {
-                        'message': 'Session not found.',
-                    }
+                            'message': 'User not allowed.',
+                        }
                     return Response(response)
+
             else:
                 response = {
                     'message': 'session_token is required.',
@@ -218,6 +228,33 @@ class DeleteSessionsAPI(generics.GenericAPIView):
             return Response(response)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class JoinSessionssAPI(generics.GenericAPIView):
+    serializer_class = Session_JoinSerializer
+    permission_classes = (IsAuthenticated,)
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        sessionselect = session.objects.filter(session_token = serializer.data['session_token']).first()
+        if sessionselect.users.filter(id=request.user.id).exists():
+            response = {
+                'message': 'user already in session.',
+            }
+            return Response(response)
+        try :
+            sessionselect.users.add(request.user)
+            response = {
+                    'status': 'success',
+                    'code': status.HTTP_200_OK,
+                    'message': 'joined session successfully',
+                    'data': []
+                }
+            return Response(response)
+        except Exception as e:
+            response = {
+                'message': 'Session not found.',
+            }
+            return Response(response)
 
 
 class GetSessionssAPI(generics.GenericAPIView):

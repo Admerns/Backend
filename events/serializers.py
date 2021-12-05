@@ -93,9 +93,12 @@ class Event_GetSerializer(serializers.ModelSerializer):
         }
 
 class Event_SearchSerializer(serializers.ModelSerializer):
+
+    s_time = serializers.CharField(required=False)
+
     class Meta:
         model = event
-        fields = ('id', 'event_token', 'title', 'time', 'privacy',
+        fields = ('id', 'event_token', 'title', 'time', 's_time', 'privacy',
          'category', 'description', 'isVirtual', 'location')
         extra_kwargs = {
             'event_token': {'read_only': True, 'required':False},
@@ -127,3 +130,13 @@ class Session_GetSerializer(serializers.ModelSerializer):
             'event': {'required':False},
             'users': {'required':False},
         }
+
+class Session_JoinSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = session
+        fields = ('id', 'session_token')
+        extra_kwargs = {
+            'session_token': {'required':True},
+            'id': {'required':False},
+        }
+
