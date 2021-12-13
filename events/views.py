@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 from django.db.models.query import QuerySet
 from django.shortcuts import render
-from .serializers import Event_CreateSerializer, Event_GetSerializer, Event_SessionsSerializer, Event_DeleteSerializer, Session_JoinSerializer
+from .serializers import Event_CreateSerializer, Event_GetSerializer, Event_SessionsSerializer, Event_DeleteSerializer, Session_GetDaySerializer, Session_JoinSerializer
 from .serializers import Event_EditSerializer, Event_SearchSerializer, Session_DeleteSerializer, Session_GetSerializer
 from rest_framework import generics, status
 from rest_framework.fields import empty
@@ -9,7 +9,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated 
 from .models import event, session
 from django.db import connection
-
+from django.core.mail import send_mail  
 
 # Create your views here.
 class EventsAPI(generics.GenericAPIView):
@@ -130,6 +130,8 @@ class EditEventsAPI(generics.UpdateAPIView):
                 event_editing.isVirtual = (serializer.data.get("isVirtual"))
             if(serializer.data.get("location") != None ):
                 event_editing.location = (serializer.data.get("location"))
+            if(serializer.data.get("address") != None ):
+                event_editing.address = (serializer.data.get("address"))
             if(serializer.data.get("sessions") != None ):
                 event_editing.sessions = (serializer.data.get("sessions"))
             
@@ -221,6 +223,21 @@ class DeleteSessionsAPI(generics.GenericAPIView):
                 if (userselect == request.user.id):
 
                     try:
+                        users = sessionselect.users.all()
+                        email_plaintext_message = "Event title: {title} \nSession time: {time}".format(title=eventselect.title , time=sessionselect.time)
+                        for u in users:
+                            
+                            send_mail(
+                                # title:
+                                "Session delete alert for {title}".format(title="Shanbe App"),
+                                # message:
+                                ".یکی از ملاقات هایی که شما داشتید توسط سازنده رویداد لغو شده است \n .لطفا برای ثبت تاریخ ملاقات جدید مجددا اقدام کنید \n" + ":مشخصات رویداد لغو شده به شرح زیر است\n" + email_plaintext_message,
+                                # from:
+                                "noreply@shanbe.local",
+                                # to:
+                                [u.email]
+                            )
+
                         session.delete(sessionselect)
                     except Exception as e:
                         response = {
@@ -262,22 +279,23 @@ class JoinSessionssAPI(generics.GenericAPIView):
                 'message': 'user already in session.',
             }
             return Response(response)
-        try :
-            sessionselect.users.add(request.user)
-            sessionselect.filled = sessionselect.filled + 1
-            sessionselect.save()
+        
+        if (sessionselect.filled >= sessionselect.limit):
             response = {
-                    'status': 'success',
-                    'code': status.HTTP_200_OK,
-                    'message': 'joined session successfully',
-                    'data': []
-                }
-            return Response(response)
-        except Exception as e:
-            response = {+
-                'message': 'Session not found.',
+            'message': 'no space.',
             }
             return Response(response)
+        sessionselect.users.add(request.user)
+        sessionselect.filled = sessionselect.filled + 1
+        sessionselect.save()
+        response = {
+                'status': 'success',
+                'code': status.HTTP_200_OK,
+                'message': 'joined session successfully',
+                'data': []
+            }
+        return Response(response)
+
 
 class CancelSessionssAPI(generics.GenericAPIView):
     serializer_class = Session_JoinSerializer
@@ -318,5 +336,15 @@ class GetSessionssAPI(generics.GenericAPIView):
         serializer.is_valid(raise_exception=True)
 
         sessions = request.user.user_sessions.all()
+        serializer = (self.get_serializer(sessions, many=True))
+        return Response(serializer.data)
+
+class GetSessionsDayAPI(generics.GenericAPIView):
+    serializer_class = Session_GetDaySerializer
+    permission_classes = (IsAuthenticated,)
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data = request.data)
+        serializer.is_valid(raise_exception=True)
+        sessions = request.user.user_sessions.filter(time__startswith = serializer.data['time'])
         serializer = (self.get_serializer(sessions, many=True))
         return Response(serializer.data)

@@ -1,5 +1,5 @@
 from django.urls import path, include
-from .views import CancelSessionssAPI, DeleteSessionsAPI, EventsAPI, Event_SessionsAPI, GetCreatedEventsAPI, GetEventsAPI, DeleteEventsAPI
+from .views import CancelSessionssAPI, DeleteSessionsAPI, EventsAPI, Event_SessionsAPI, GetCreatedEventsAPI, GetEventsAPI, DeleteEventsAPI, GetSessionsDayAPI
 from .views import EditEventsAPI, Event_SearchAPI, DeleteSessionsAPI, GetSessionssAPI,JoinSessionssAPI
 
 urlpatterns = [
@@ -12,6 +12,7 @@ urlpatterns = [
     path('event-search/', Event_SearchAPI.as_view(), name='event-search'),
     path('session-delete/', DeleteSessionsAPI.as_view(), name='session-delete'),
     path('session-get/', GetSessionssAPI.as_view(), name='session-get'),
+    path('session-get-day/', GetSessionsDayAPI.as_view(), name='session-get-day'),
     path('session-join/', JoinSessionssAPI.as_view(), name='session-join'),
     path('session-cancel/', CancelSessionssAPI.as_view(), name='session-cancel'),
 ]
