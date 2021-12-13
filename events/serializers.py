@@ -145,6 +145,20 @@ class Session_GetSerializer(serializers.ModelSerializer):
             'event': {'required':False},
         }
 
+class Session_GetDaySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = session
+        fields = ('id', 'session_token', 'limit','filled', 'time', 'event')
+        extra_kwargs = {
+            'session_token': {'required':False},
+            'id': {'required':False},
+            'limit': {'required':False},
+            'filled':{'required':False},
+            'time': {'required':False},
+            'status':{'required':False},
+            'event': {'required':False},
+        }
+
 class Session_JoinSerializer(serializers.ModelSerializer):
     class Meta:
         model = session
