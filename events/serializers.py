@@ -29,7 +29,7 @@ class Event_SessionsSerializer(serializers.ModelSerializer):
     class Meta:
         model = event
         fields = ('id', 'event_token', 'title', 'time', 'category', 'description',
-         'location','session_set','first_name', 'last_name','username' , 'address')
+         'location','session_set','first_name', 'last_name','username' , 'address' , 'link')
         extra_kwargs = {
             'event_token': {'required':False},
             'id': {'required':False},
@@ -40,6 +40,7 @@ class Event_SessionsSerializer(serializers.ModelSerializer):
             'description': {'required':False},
             'location': {'required':False},
             'address': {'required':False},
+            'link': {'required':False},
         }
 
 class Event_CreateSerializer(serializers.ModelSerializer):
@@ -50,7 +51,7 @@ class Event_CreateSerializer(serializers.ModelSerializer):
         
         model = event
         fields = ('id', 'user_token', 'event_token', 'title', 'time', 'privacy',
-         'category', 'description', 'isVirtual', 'location' , 'sessions' , 'address')
+         'category', 'description', 'isVirtual', 'location' , 'sessions' , 'address' , 'link')
         extra_kwargs = {
             'event_token': {'read_only': True},
             'time': {'required':False},
@@ -72,7 +73,7 @@ class Event_EditSerializer(serializers.ModelSerializer):
     class Meta:
         model = event
         fields = ('id', 'user_token', 'event_token', 'title', 'privacy',
-         'category', 'description', 'isVirtual', 'location' , 'sessions' , 'address')
+         'category', 'description', 'isVirtual', 'location' , 'sessions' , 'address' , 'link')
         extra_kwargs = {
             'user_token': {'read_only': True},
             'title': {'required':False},
@@ -83,6 +84,7 @@ class Event_EditSerializer(serializers.ModelSerializer):
             'location': {'required':False},
             'sessions': {'required':False},
             'address': {'required':False},
+            'link': {'required':False},
         }
 
 class Event_DeleteSerializer(serializers.ModelSerializer):
@@ -94,7 +96,7 @@ class Event_GetSerializer(serializers.ModelSerializer):
     class Meta:
         model = event
         fields = ('id', 'event_token', 'title', 'time', 'category', 'description',
-         'location', 'address')
+         'location', 'address' , 'link')
         extra_kwargs = {
             'event_token': {'required':False},
             'id': {'required':False},
@@ -105,6 +107,7 @@ class Event_GetSerializer(serializers.ModelSerializer):
             'description': {'required':False},
             'location': {'required':False},
             'address': {'required':False},
+            'link': {'required':False},
         }
 
 class Event_SearchSerializer(serializers.ModelSerializer):
@@ -125,6 +128,7 @@ class Event_SearchSerializer(serializers.ModelSerializer):
             'isVirtual': {'required':False},
             'description': {'read_only': True, 'required':False},
             'address': {'read_only': True, 'required':False},
+            'link': {'read_only': True, 'required':False},
             'location': {'required':False},
         }
 

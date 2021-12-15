@@ -14,7 +14,8 @@ class event(models.Model):
     category = models.TextField()
     description = models.TextField()
     isVirtual = models.BooleanField(default=False)
-    address = models.TextField(default='')
+    address = models.TextField(blank=True, default='')
+    link = models.TextField(blank=True, default='')
     location = models.TextField()
     def set_userid(self):
         with connection.cursor() as cursor:
