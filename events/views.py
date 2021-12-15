@@ -132,6 +132,8 @@ class EditEventsAPI(generics.UpdateAPIView):
                 event_editing.location = (serializer.data.get("location"))
             if(serializer.data.get("address") != None ):
                 event_editing.address = (serializer.data.get("address"))
+            if(serializer.data.get("link") != None ):
+                event_editing.address = (serializer.data.get("link"))
             if(serializer.data.get("sessions") != None ):
                 event_editing.sessions = (serializer.data.get("sessions"))
             
