@@ -91,6 +91,7 @@ class EditAPI(generics.UpdateAPIView):
     def update(self, request, *args, **kwargs):
         self.object = self.get_object()
         serializer = self.get_serializer(data=request.data)
+
         if serializer.is_valid():
             if(serializer.data.get("email") != None and serializer.data.get("email") != ""):
                 self.object.email = (serializer.data.get("email"))
@@ -100,16 +101,16 @@ class EditAPI(generics.UpdateAPIView):
                 self.object.last_name = (serializer.data.get("last_name"))
             self.object.save()
 
-            try:
-                if(serializer.data.get("phone_number") != None ):
-                    profile = UserProfile(user=self.object, phone_number = serializer.data.get("phone_number") , avatar = serializer.validated_data["avatar"])
-                else :
-                    profile = UserProfile(user=self.object, avatar = serializer.validated_data["avatar"])
 
-                profile.save()
-            except Exception as e:
-                profile = UserProfile(user=self.object, phone_number = serializer.data.get("phone_number"))
-                profile.save()
+
+            
+            if(serializer.data.get("phone_number") != None ):
+                profile = UserProfile(user=self.object, phone_number = serializer.data.get("phone_number") , avatar = serializer.validated_data["avatar"])
+            else :
+                print (serializer.validated_data["avatar"])
+                profile = UserProfile(user=self.object, avatar = serializer.validated_data["avatar"])
+
+            profile.save()
             
             self.object.save()
 

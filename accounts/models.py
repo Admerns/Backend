@@ -9,7 +9,6 @@ from django.urls import reverse
 from django_rest_passwordreset.signals import reset_password_token_created
 from django.core.mail import send_mail  
 
-
 from django.utils import timezone
 import os
 from uuid import uuid4
@@ -24,7 +23,7 @@ def password_reset_token_created(sender, instance, reset_password_token, *args, 
         # title:
         "Password Reset for {title}".format(title="Shanbe App"),
         # message:
-         "کد زیر برای تغییر رمز عبور شما ارسال شده است. \n اگر شما درخواستی برای تغییر رمز عبور خود نداده اید لطفا به این پیام توجه نکنید. \n" + email_plaintext_message,
+         "کد زیر برای تغییر  رمز عبور شما ارسال شده است. \n اگر شما درخواستی برای تغییر رمز عبور خود نداده اید لطفا به این پیام توجه نکنید. \n" + email_plaintext_message,
         # from:
         "noreply@shanbe.local",
         # to:
@@ -38,12 +37,8 @@ def password_reset_token_created(sender, instance, reset_password_token, *args, 
 def path_and_rename(instance, filename):
     upload_to = 'images/userProfile'
     ext = filename.split('.')[-1]
-    # get filename
-    if instance.pk:
-        filename = '{}.{}'.format(instance.pk, ext)
-    else:
-        # set filename as random string
-        filename = '{}.{}'.format(uuid4().hex, ext)
+
+    filename = '{}.{}'.format(uuid4().hex, ext)
     # return the whole path to the file
     return os.path.join(upload_to, filename)
 
