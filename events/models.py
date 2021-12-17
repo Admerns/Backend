@@ -8,13 +8,14 @@ class event(models.Model):
     user_token = models.CharField(max_length=500, blank=False, default='')
     event_token = models.CharField(max_length=500, blank=False, default='')
     userid = models.IntegerField(blank=False)
-    limit = models.IntegerField(blank=False)
     title = models.CharField(max_length=500, blank=False)
     time = models.DateTimeField(auto_now_add=True)
     privacy = models.BooleanField(default=False)
     category = models.TextField()
     description = models.TextField()
     isVirtual = models.BooleanField(default=False)
+    address = models.TextField(blank=True, default='')
+    link = models.TextField(blank=True, default='')
     location = models.TextField()
     def set_userid(self):
         with connection.cursor() as cursor:
@@ -29,7 +30,7 @@ class event(models.Model):
         try:
             if not self.userid:
                 self.set_userid()
-            if not self.task_token:
+            if not self.event_token:
                 self.set_event_token()
             return super(event, self).save(*args, **kwargs)
         except:
@@ -37,3 +38,22 @@ class event(models.Model):
 
     class Meta:
         db_table = 'events'
+
+class session (models.Model):
+    session_token = models.CharField(max_length=500, blank=False, default='')
+    limit = models.IntegerField(blank=False)
+    filled = models.IntegerField(blank=False, default=0)
+    time = models.TextField()
+    event = models.ForeignKey(event, on_delete=models.CASCADE)
+    users = models.ManyToManyField(User,related_name='user_sessions')
+
+    def set_session_token(self):
+        self.session_token = token_urlsafe(16)
+    
+    def save(self, *args, **kwargs):
+        try:
+            if not self.session_token:
+                self.set_session_token()
+            return super(session, self).save(*args, **kwargs)
+        except:
+            raise ValidationError("Session token initialization error!")

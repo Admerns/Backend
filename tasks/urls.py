@@ -1,5 +1,6 @@
 from django.urls import path, include
-from .views import FinishTaskAPI, TasksAPI, GetTasksAPI, EditTasksAPI, GetTasksDayAPI
+from .views import DeleteTaskAPI, FinishTaskAPI, TasksAPI, GetTasksAPI, EditTasksAPI, GetTasksDayAPI, DeleteTaskAPI
+from django.conf.urls import url 
 
 urlpatterns = [
     path('task-create/', TasksAPI.as_view(), name='task-create'),
@@ -7,4 +8,5 @@ urlpatterns = [
     path('task-edit/', EditTasksAPI.as_view(), name='task-edit'),
     path('task-finish/', FinishTaskAPI.as_view(), name='task-finish'),
     path('task-get-day/', GetTasksDayAPI.as_view(), name='task-get-day'),
+    path('task-delete/', DeleteTaskAPI.as_view(), name='task-delete'),
 ]
