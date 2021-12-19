@@ -4,7 +4,7 @@ from knox.models import AuthToken
 
 from accounts.models import UserProfile
 
-from .serializers import UserSerializer,LoginSerializer, RegisterSerializer, ChangePasswordSerializer, EditSerializer
+from .serializers import GetUserSerializer, UserSerializer,LoginSerializer, RegisterSerializer, ChangePasswordSerializer, EditSerializer
 
 from django.contrib.auth import login
 from rest_framework.authtoken.serializers import AuthTokenSerializer
@@ -18,6 +18,21 @@ class CurrentUserAPI(generics.GenericAPIView):
     def post(self, request):
         serializer = self.get_serializer(request.user)
         return Response(serializer.data)
+
+class GetProfileAPI(generics.GenericAPIView):
+    serializer_class = GetUserSerializer
+    def post(self, request, *args, **kwargs):
+        print(request.data['username'])
+        try:
+            user = User.objects.filter(username = request.data['username']).first()
+            serializer = self.get_serializer(user)
+            return Response(serializer.data)
+        except Exception as e:
+            response = {
+                'message': 'User not found.',
+            }
+            return Response(response)
+
 
 
 # Register API

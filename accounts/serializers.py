@@ -25,6 +25,32 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = ('id', 'username', 'email', 'first_name', 'last_name', 'phone_number', 'avatar')
 
+class GetUserSerializer(serializers.ModelSerializer):
+    phone_number = serializers.SerializerMethodField()
+    avatar = serializers.SerializerMethodField()
+
+    def get_phone_number(self, obj):
+        return obj.userprofile.phone_number
+
+    def get_avatar(self, obj):
+        try:
+            return (obj.userprofile.avatar.url)
+        except Exception as e:
+            return "None"
+
+    class Meta:
+        model = User
+        fields = ('id', 'username', 'email', 'first_name', 'last_name', 'phone_number', 'avatar')
+        extra_kwargs = {
+            'username': {'required':False, },
+            'email': {'read_only': True},
+            'first_name': {'read_only': True},
+            'last_name': {'read_only': True},
+            'phone_number': {'read_only': True},
+            'avatar': {'read_only': True},
+        }
+        
+
         
 # Register Serializer
 class RegisterSerializer(serializers.ModelSerializer):

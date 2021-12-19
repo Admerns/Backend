@@ -174,4 +174,3 @@ class Session_JoinSerializer(serializers.ModelSerializer):
             'session_token': {'required':True},
             'id': {'required':False},
         }
-

@@ -2,8 +2,26 @@ from pathlib import Path
 import os
 import cloudinary
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
+import json
+
+from django.core.exceptions import ImproperlyConfigured
+
+
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+
+with open(os.path.join(BASE_DIR, 'secrets.json')) as secrets_file:
+    secrets = json.load(secrets_file)
+
+def get_secret(setting, secrets=secrets):
+    """Get secret setting or fail with ImproperlyConfigured"""
+    try:
+        return secrets[setting]
+    except KeyError:
+        raise ImproperlyConfigured("Set the {} setting".format(setting))
+
+# Build paths inside the project like this: BASE_DIR / 'subdir'.
+
 
 
 # Quick-start development settings - unsuitable for production
@@ -45,7 +63,7 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = '587'
 EMAIL_HOST_USER = 'shanbeapp'
-EMAIL_HOST_PASSWORD = 'ShanbeAdmernz00'
+EMAIL_HOST_PASSWORD = get_secret("EMAIL_PASSWORD")
 EMAIL_USE_TLS = True
 EMAIL_USE_SSL = False
 
@@ -101,9 +119,10 @@ DATABASES = {
         'HOST': 'remotemysql.com',
         'PORT': '3306',
         'USER': 'JbYuR8XzJt',
-        'PASSWORD': '1nM97N2yYQ',
+        'PASSWORD': get_secret("DB_PASSWORD"),
     }
 }
+
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
@@ -176,5 +195,5 @@ DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 CLOUDINARY_STORAGE = {
     'CLOUD_NAME': 'shanbe',
     'API_KEY': '561175818875548',
-    'API_SECRET': 'pmLtxedHihUnutNWStwAMqCIMVg',
+    'API_SECRET': get_secret("CLOUDINARY_PASSWORD"),
 }
