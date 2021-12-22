@@ -10,3 +10,4 @@ urlpatterns = [
     path('task-get-day/', GetTasksDayAPI.as_view(), name='task-get-day'),
     path('task-delete/', DeleteTaskAPI.as_view(), name='task-delete'),
 ]
+
