@@ -1,3 +1,5 @@
+from os import access
+from django.db.models.query import QuerySet
 from rest_framework import generics, status
 from rest_framework.fields import empty
 from rest_framework.decorators import api_view
@@ -8,6 +10,9 @@ from .models import task
 from rest_framework.permissions import IsAuthenticated 
 from django.db import connection
 from django.http.response import JsonResponse
+from googlecalendar.GoogleCalendarInsert import insert
+from googlecalendar.models import google_calendar
+from googlecalendar.serializers import GoogleCalendarLogin_CreateSerializer
 
 # Create your views here.
 class TasksAPI(generics.GenericAPIView):
@@ -18,6 +23,23 @@ class TasksAPI(generics.GenericAPIView):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         task = serializer.save()
+
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT userid FROM google_calendar")
+            userids = cursor.fetchall()
+        userid_arr = []
+        [userid_arr.append(id[0]) for id in userids if userid_arr.count != 0]
+        #print(userid_arr)
+        if request.user.id in userid_arr:
+            with connection.cursor() as cursor:
+                cursor.execute("SELECT access_token FROM google_calendar WHERE userid = %s", request.user.id)
+                access_token = cursor.fetchone()
+                cursor.execute("SELECT refresh_token FROM google_calendar WHERE userid = %s", request.user.id)
+                refresh_token = cursor.fetchone()
+            #print(access_token[0] , refresh_token[0])
+            insert(access_token[0], refresh_token[0], serializer.data['title'], serializer.data['description'], serializer.data['alarm_check'])
+            #print(serializer.data)
+
         return Response({
         "task": Task_CreateSerializer(task, context=self.get_serializer_context()).data,
         })
