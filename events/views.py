@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 from django.db.models.query import QuerySet
 from django.shortcuts import render
-from .serializers import Event_CreateSerializer, Event_GetSerializer, Event_SessionsSerializer, Event_DeleteSerializer, Session_GetDaySerializer, Session_JoinSerializer
+from .serializers import Event_CreateSerializer, Event_GetSerializer, Event_SessionsSerializer, Event_DeleteSerializer, Session_GetDaySerializer, Session_JoinSerializer, Session_UsersSerializer
 from .serializers import Event_EditSerializer, Event_SearchSerializer, Session_DeleteSerializer, Session_GetSerializer
 from rest_framework import generics, status
 from rest_framework.fields import empty
@@ -268,6 +268,48 @@ class DeleteSessionsAPI(generics.GenericAPIView):
             return Response(response)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class UsersSessionsAPI(generics.GenericAPIView):
+    serializer_class = Session_UsersSerializer
+    permission_classes = (IsAuthenticated,)
+    def post(self, request, *args, **kwargs):
+        if ('session_token' in request.data):
+            sessionselect = session.objects.filter(session_token = request.data['session_token']).first()
+            eventselect = sessionselect.event
+            userselect = eventselect.userid
+            if (userselect == request.user.id):
+
+                try:
+                    users = sessionselect.users.all()
+                    serializer = (self.get_serializer(users, many=True))
+
+                    return Response(serializer.data)
+
+                except Exception as e:
+                    response = {
+                        'message': 'Session not found.',
+                    }
+                    return Response(response)
+            
+            else:
+                response = {
+                        'message': 'User not allowed.',
+                    }
+                return Response(response)
+
+        else:
+            response = {
+                'message': 'session_token is required.',
+            }
+            return Response(response)
+            
+        response = {
+            'status': 'success',
+            'code': status.HTTP_200_OK,
+            'message': 'Session deleted successfully',
+            'data': []
+        }
+        return Response(response)
 
 class JoinSessionssAPI(generics.GenericAPIView):
     serializer_class = Session_JoinSerializer

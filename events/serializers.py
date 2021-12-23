@@ -137,6 +137,11 @@ class Session_DeleteSerializer(serializers.ModelSerializer):
         model = session
         fields = ('id', 'session_token')
 
+class Session_UsersSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('id', 'username' , 'first_name' , 'last_name')
+
 class Session_GetSerializer(serializers.ModelSerializer):
     event = Event_GetSerializer( read_only=True)
     class Meta:
