@@ -22,7 +22,6 @@ class CurrentUserAPI(generics.GenericAPIView):
 class GetProfileAPI(generics.GenericAPIView):
     serializer_class = GetUserSerializer
     def post(self, request, *args, **kwargs):
-        print(request.data['username'])
         try:
             user = User.objects.filter(username = request.data['username']).first()
             serializer = self.get_serializer(user)
