@@ -56,7 +56,7 @@ def insert(access_token, refresh_token, summary, descripion, start):
         timearr = s2[1].split(':')
 
         start_time = datetime(int(datearr[0]), int(datearr[1]), int(datearr[2]), int(timearr[0]), int(timearr[1]), 0)
-        end_time = start_time + timedelta(hours=0.1)
+        end_time = start_time + timedelta(hours=1)
         timezone = 'Asia/Tehran'
         event = {
         'summary': summary,
