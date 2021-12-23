@@ -141,7 +141,7 @@ class LoginSerializer(serializers.ModelSerializer):
 class EditSerializer(serializers.ModelSerializer):
 
     email = EmailField(required = False)
-    avatar = ImageField(max_length=None, use_url=True, allow_null=True, required=False)
+    avatar = ImageField(use_url=True, required=False)
     first_name = CharField(max_length=32, required=False)
     last_name = CharField(max_length=32, required=False)
     phone_number = CharField(max_length=13,min_length=8, required=False)
@@ -154,6 +154,7 @@ class EditSerializer(serializers.ModelSerializer):
             'last_name': {'required': False},
             "email": {'required': False },
             "phone_number": {'required': False },
+            "avatar": {'required': False}
         }
 
 

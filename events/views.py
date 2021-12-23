@@ -10,6 +10,7 @@ from rest_framework.permissions import IsAuthenticated
 from .models import event, session
 from django.db import connection
 from django.core.mail import send_mail  
+from googlecalendar.GoogleCalendarInsert import insert
 
 # Create your views here.
 class EventsAPI(generics.GenericAPIView):
@@ -332,6 +333,30 @@ class JoinSessionssAPI(generics.GenericAPIView):
         sessionselect.users.add(request.user)
         sessionselect.filled = sessionselect.filled + 1
         sessionselect.save()
+
+        """Add to google calendar"""
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT userid FROM google_calendar")
+            userids = cursor.fetchall()
+        userid_arr = []
+        [userid_arr.append(id[0]) for id in userids if userid_arr.count != 0]
+        #print(userid_arr)
+        if request.user.id in userid_arr:
+            with connection.cursor() as cursor:
+                cursor.execute("SELECT access_token FROM google_calendar WHERE userid = %s", request.user.id)
+                access_token = cursor.fetchone()
+                cursor.execute("SELECT refresh_token FROM google_calendar WHERE userid = %s", request.user.id)
+                refresh_token = cursor.fetchone()
+                cursor.execute("SELECT event_id FROM events_session WHERE session_token = %s", serializer.data['session_token'])
+                eventid = cursor.fetchone()
+                cursor.execute("SELECT time FROM events_session WHERE session_token = %s", serializer.data['session_token'])
+                session_time = cursor.fetchone()
+                cursor.execute("SELECT title FROM events WHERE id = %s", eventid)
+                event_title = cursor.fetchone()
+                cursor.execute("SELECT description FROM events WHERE id = %s", eventid)
+                event_description = cursor.fetchone()
+            insert(access_token[0], refresh_token[0], event_title[0], event_description[0], session_time[0])
+
         response = {
                 'status': 'success',
                 'code': status.HTTP_200_OK,

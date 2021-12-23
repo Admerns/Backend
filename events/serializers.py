@@ -158,6 +158,7 @@ class Session_GetSerializer(serializers.ModelSerializer):
         }
 
 class Session_GetDaySerializer(serializers.ModelSerializer):
+    event = Event_GetSerializer( read_only=True)
     class Meta:
         model = session
         fields = ('id', 'session_token', 'limit','filled', 'time', 'event')
