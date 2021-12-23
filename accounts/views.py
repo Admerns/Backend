@@ -116,14 +116,15 @@ class EditAPI(generics.UpdateAPIView):
                 self.object.last_name = (serializer.data.get("last_name"))
             self.object.save()
 
+            profile = self.object.userprofile
 
-
-            
             if(serializer.data.get("phone_number") != None ):
-                profile = UserProfile(user=self.object, phone_number = serializer.data.get("phone_number") , avatar = serializer.validated_data["avatar"])
-            else :
-                print (serializer.validated_data["avatar"])
-                profile = UserProfile(user=self.object, avatar = serializer.validated_data["avatar"])
+                profile.phone_number = (serializer.data.get("phone_number"))
+            try:
+                if(serializer.validated_data["avatar"] != None ):
+                    profile.avatar = ((serializer.validated_data["avatar"]))
+            except Exception as e:
+                pass
 
             profile.save()
             
