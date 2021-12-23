@@ -1,5 +1,6 @@
 from django.urls import path, include
+from .views import GoogleCalendarLoginAPI
 
 urlpatterns = [
-    #path('event-create/', EventsAPI.as_view(), name='event-create'),
+    path('googlecalendar_login-create/', GoogleCalendarLoginAPI.as_view(), name='googlecalendar_login-create'),
 ]
