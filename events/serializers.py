@@ -137,6 +137,11 @@ class Session_DeleteSerializer(serializers.ModelSerializer):
         model = session
         fields = ('id', 'session_token')
 
+class Session_UsersSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('id', 'username' , 'first_name' , 'last_name')
+
 class Session_GetSerializer(serializers.ModelSerializer):
     event = Event_GetSerializer( read_only=True)
     class Meta:
@@ -153,6 +158,7 @@ class Session_GetSerializer(serializers.ModelSerializer):
         }
 
 class Session_GetDaySerializer(serializers.ModelSerializer):
+    event = Event_GetSerializer( read_only=True)
     class Meta:
         model = session
         fields = ('id', 'session_token', 'limit','filled', 'time', 'event')
@@ -174,4 +180,3 @@ class Session_JoinSerializer(serializers.ModelSerializer):
             'session_token': {'required':True},
             'id': {'required':False},
         }
-

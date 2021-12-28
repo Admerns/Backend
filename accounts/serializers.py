@@ -25,6 +25,32 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = ('id', 'username', 'email', 'first_name', 'last_name', 'phone_number', 'avatar')
 
+class GetUserSerializer(serializers.ModelSerializer):
+    phone_number = serializers.SerializerMethodField()
+    avatar = serializers.SerializerMethodField()
+
+    def get_phone_number(self, obj):
+        return obj.userprofile.phone_number
+
+    def get_avatar(self, obj):
+        try:
+            return (obj.userprofile.avatar.url)
+        except Exception as e:
+            return "None"
+
+    class Meta:
+        model = User
+        fields = ('id', 'username', 'email', 'first_name', 'last_name', 'phone_number', 'avatar')
+        extra_kwargs = {
+            'username': {'required':False, },
+            'email': {'read_only': True},
+            'first_name': {'read_only': True},
+            'last_name': {'read_only': True},
+            'phone_number': {'read_only': True},
+            'avatar': {'read_only': True},
+        }
+        
+
         
 # Register Serializer
 class RegisterSerializer(serializers.ModelSerializer):
@@ -115,7 +141,7 @@ class LoginSerializer(serializers.ModelSerializer):
 class EditSerializer(serializers.ModelSerializer):
 
     email = EmailField(required = False)
-    avatar = ImageField(max_length=None, use_url=True, allow_null=True, required=False)
+    avatar = ImageField(use_url=True, required=False)
     first_name = CharField(max_length=32, required=False)
     last_name = CharField(max_length=32, required=False)
     phone_number = CharField(max_length=13,min_length=8, required=False)
@@ -128,6 +154,7 @@ class EditSerializer(serializers.ModelSerializer):
             'last_name': {'required': False},
             "email": {'required': False },
             "phone_number": {'required': False },
+            "avatar": {'required': False}
         }
 
 

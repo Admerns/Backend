@@ -23,4 +23,5 @@ urlpatterns = [
     path('', include('accounts.urls')),
     path('', include('tasks.urls')),
     path('', include('events.urls')),
+    path('', include('googlecalendar.urls')),
 ] 
