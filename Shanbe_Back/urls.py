@@ -20,8 +20,8 @@ schema_view = get_schema_view(
 urlpatterns = [
     path('', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
     path('admin/', admin.site.urls),
-    path('', include('accounts.urls')),
-    path('', include('tasks.urls')),
-    path('', include('events.urls')),
-    path('', include('googlecalendar.urls')),
+    path('accounts/', include('accounts.urls')),
+    path('tasks/', include('tasks.urls')),
+    path('events/', include('events.urls')),
+    path('calendar/', include('googlecalendar.urls')),
 ] 
