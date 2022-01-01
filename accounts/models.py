@@ -53,3 +53,16 @@ class UserProfile(models.Model):
     )
     def __unicode__(self):
         return self.user.get_full_name()
+
+class Metadata(models.Model):
+    sport = models.IntegerField(blank=False, default=0)
+    study = models.IntegerField(blank=False, default=0)
+    meeting = models.IntegerField(blank=False, default=0)
+    work = models.IntegerField(blank=False, default=0)
+    hangout = models.IntegerField(blank=False, default=0)
+    city = models.TextField(blank=False, default="Not set")
+    user = models.OneToOneField(
+        User,
+        on_delete=models.CASCADE,
+        primary_key=True,
+    )
