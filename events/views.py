@@ -473,13 +473,14 @@ class GetEventsSuggestionAPI(generics.GenericAPIView):
         user = request.user
         
         queryset = []
+
+        user = request.user
         try :
             metadata = user.metadata
   
         except Exception as e:
             metadata = Metadata(user=user)
-
-        print(metadata.city)
+    
         if(metadata.city == "Not set"):
             events = event.objects.all()
         else :
