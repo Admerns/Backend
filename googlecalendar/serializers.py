@@ -12,3 +12,7 @@ class GoogleCalendarLogin_CreateSerializer(serializers.ModelSerializer):
         # extra_kwargs = {
         #     'userid': {'read_only': True},
         # }
+
+class Coordinates_CreateSerializer(serializers.Serializer):
+    latitude = serializers.CharField()
+    longitude = serializers.CharField()
