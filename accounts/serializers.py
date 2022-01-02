@@ -2,7 +2,7 @@ from enum import unique
 from django.http import request
 from rest_framework import serializers
 from django.contrib.auth.models import User
-from accounts.models import UserProfile
+from accounts.models import Metadata, UserProfile
 from django.forms import ValidationError
 from rest_framework.fields import CharField, EmailField, ImageField
 import re
@@ -183,3 +183,8 @@ class LoginSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ('username', 'password')
+
+class CitySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Metadata
+        fields = ('city')
