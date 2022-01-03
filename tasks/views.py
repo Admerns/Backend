@@ -95,13 +95,13 @@ class EditTasksAPI(generics.UpdateAPIView):
                 response = {
                     'message': 'task_token is required.',
                 }
-                return Response(response)
+                return Response(response, status=status.HTTP_400_BAD_REQUEST)
 
             if (editingTask == None):
                 response = {
                     'message': 'Task not found.',
                 }
-                return Response(response)
+                return Response(response, status=status.HTTP_400_BAD_REQUEST)
 
             if(serializer.data.get("title") != None):
                 editingTask.title = (serializer.data.get("title"))
@@ -145,13 +145,13 @@ class FinishTaskAPI(generics.UpdateAPIView):
                 response = {
                     'message': 'task_token is required.',
                 }
-                return Response(response)
+                return Response(response, status=status.HTTP_400_BAD_REQUEST)
 
             if (finishedTask == None):
                 response = {
                     'message': 'Task not found.',
                 }
-                return Response(response)
+                return Response(response, status=status.HTTP_400_BAD_REQUEST)
             
             if (serializer.data['status'] == "done"):
                 finishedTask.status = 'done'
@@ -161,7 +161,7 @@ class FinishTaskAPI(generics.UpdateAPIView):
                 response = {
                     'message': 'Status not defined.',
                 }
-                return Response(response)
+                return Response(response, status=status.HTTP_400_BAD_REQUEST)
             finishedTask.save()
 
             response = {
@@ -232,12 +232,12 @@ class DeleteTaskAPI(generics.GenericAPIView):
                     response = {
                         'message': 'Task not found.',
                     }
-                    return Response(response)
+                    return Response(response, status=status.HTTP_400_BAD_REQUEST)
             else:
                 response = {
                     'message': 'task_token is required.',
                 }
-                return Response(response)
+                return Response(response,  status=status.HTTP_400_BAD_REQUEST)
                 
         
 

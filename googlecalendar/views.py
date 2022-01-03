@@ -67,4 +67,4 @@ class CoordinatesAPI(generics.GenericAPIView):
                 'message': 'Session not found.',
             }
 
-        return Response(response)
+        return Response(response, status=status.HTTP_400_BAD_REQUEST)
