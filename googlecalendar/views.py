@@ -62,9 +62,10 @@ class CoordinatesAPI(generics.GenericAPIView):
                         'message': 'City added successfuly.',
                         'data': []
                     }
+            return Response(response)
         except:
             response = {
-                'message': 'Session not found.',
+                'message': 'Coordinates error.',
             }
-
-        return Response(response, status=status.HTTP_400_BAD_REQUEST)
+            return Response(response, status=status.HTTP_400_BAD_REQUEST)
+        
