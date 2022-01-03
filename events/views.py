@@ -41,7 +41,7 @@ class Event_SessionsAPI(generics.GenericAPIView):
             response = {
                 'message': 'Event not found.',
             }
-            return Response(response)
+            return Response(response, status=status.HTTP_400_BAD_REQUEST)
 
 class GetEventsAPI(generics.GenericAPIView):
     serializer_class = Event_GetSerializer
@@ -81,12 +81,12 @@ class DeleteEventsAPI(generics.GenericAPIView):
                     response = {
                         'message': 'Event not found.',
                     }
-                    return Response(response)
+                    return Response(response, status=status.HTTP_400_BAD_REQUEST)
             else:
                 response = {
                     'message': 'event_token is required.',
                 }
-                return Response(response)
+                return Response(response, status=status.HTTP_400_BAD_REQUEST)
                 
             response = {
                 'status': 'success',
@@ -113,13 +113,13 @@ class EditEventsAPI(generics.UpdateAPIView):
                 response = {
                     'message': 'event_token is required.',
                 }
-                return Response(response)
+                return Response(response, status=status.HTTP_400_BAD_REQUEST)
 
             if (event_editing == None):
                 response = {
                     'message': 'Event not found.',
                 }
-                return Response(response)
+                return Response(response, status=status.HTTP_400_BAD_REQUEST)
 
             if(serializer.data.get("title") != None):
                 event_editing.title = (serializer.data.get("title"))
@@ -248,19 +248,19 @@ class DeleteSessionsAPI(generics.GenericAPIView):
                         response = {
                             'message': 'Session not found.',
                         }
-                        return Response(response)
+                        return Response(response, status=status.HTTP_400_BAD_REQUEST)
                 
                 else:
                     response = {
                             'message': 'User not allowed.',
                         }
-                    return Response(response)
+                    return Response(response, status=status.HTTP_400_BAD_REQUEST)
 
             else:
                 response = {
                     'message': 'session_token is required.',
                 }
-                return Response(response)
+                return Response(response, status=status.HTTP_400_BAD_REQUEST)
                 
             response = {
                 'status': 'success',
@@ -292,13 +292,13 @@ class UsersSessionsAPI(generics.GenericAPIView):
                     response = {
                         'message': 'Session not found.',
                     }
-                    return Response(response)
+                    return Response(response, status=status.HTTP_400_BAD_REQUEST)
             
             else:
                 response = {
                         'message': 'User not allowed.',
                     }
-                return Response(response)
+                return Response(response, status=status.HTTP_400_BAD_REQUEST)
 
         else:
             response = {
@@ -325,13 +325,13 @@ class JoinSessionssAPI(generics.GenericAPIView):
             response = {
                 'message': 'user already in session.',
             }
-            return Response(response)
+            return Response(response, status=status.HTTP_400_BAD_REQUEST)
         
         if (sessionselect.filled >= sessionselect.limit):
             response = {
             'message': 'no space.',
             }
-            return Response(response)
+            return Response(response, status=status.HTTP_400_BAD_REQUEST)
         sessionselect.users.add(request.user)
         sessionselect.filled = sessionselect.filled + 1
 
@@ -403,7 +403,7 @@ class CancelSessionssAPI(generics.GenericAPIView):
                 response = {
                     'message': 'user not in session.',
                 }
-                return Response(response)
+                return Response(response, status=status.HTTP_400_BAD_REQUEST)
             sessionselect.filled = sessionselect.filled - 1
             sessionselect.save()
 
@@ -438,7 +438,7 @@ class CancelSessionssAPI(generics.GenericAPIView):
             response = {
                 'message': 'Session not found.',
             }
-            return Response(response)
+            return Response(response, status=status.HTTP_400_BAD_REQUEST)
 
 
 class GetSessionssAPI(generics.GenericAPIView):
