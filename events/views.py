@@ -1,6 +1,8 @@
 from django.contrib.auth.models import User
 from django.db.models.query import QuerySet
 from django.shortcuts import render
+
+from accounts.models import Metadata
 from .serializers import Event_CreateSerializer, Event_GetSerializer, Event_SessionsSerializer, Event_DeleteSerializer, Session_GetDaySerializer, Session_JoinSerializer, Session_UsersSerializer
 from .serializers import Event_EditSerializer, Event_SearchSerializer, Session_DeleteSerializer, Session_GetSerializer
 from rest_framework import generics, status
@@ -39,7 +41,7 @@ class Event_SessionsAPI(generics.GenericAPIView):
             response = {
                 'message': 'Event not found.',
             }
-            return Response(response)
+            return Response(response, status=status.HTTP_400_BAD_REQUEST)
 
 class GetEventsAPI(generics.GenericAPIView):
     serializer_class = Event_GetSerializer
@@ -79,12 +81,12 @@ class DeleteEventsAPI(generics.GenericAPIView):
                     response = {
                         'message': 'Event not found.',
                     }
-                    return Response(response)
+                    return Response(response, status=status.HTTP_400_BAD_REQUEST)
             else:
                 response = {
                     'message': 'event_token is required.',
                 }
-                return Response(response)
+                return Response(response, status=status.HTTP_400_BAD_REQUEST)
                 
             response = {
                 'status': 'success',
@@ -111,13 +113,13 @@ class EditEventsAPI(generics.UpdateAPIView):
                 response = {
                     'message': 'event_token is required.',
                 }
-                return Response(response)
+                return Response(response, status=status.HTTP_400_BAD_REQUEST)
 
             if (event_editing == None):
                 response = {
                     'message': 'Event not found.',
                 }
-                return Response(response)
+                return Response(response, status=status.HTTP_400_BAD_REQUEST)
 
             if(serializer.data.get("title") != None):
                 event_editing.title = (serializer.data.get("title"))
@@ -246,19 +248,19 @@ class DeleteSessionsAPI(generics.GenericAPIView):
                         response = {
                             'message': 'Session not found.',
                         }
-                        return Response(response)
+                        return Response(response, status=status.HTTP_400_BAD_REQUEST)
                 
                 else:
                     response = {
                             'message': 'User not allowed.',
                         }
-                    return Response(response)
+                    return Response(response, status=status.HTTP_400_BAD_REQUEST)
 
             else:
                 response = {
                     'message': 'session_token is required.',
                 }
-                return Response(response)
+                return Response(response, status=status.HTTP_400_BAD_REQUEST)
                 
             response = {
                 'status': 'success',
@@ -290,13 +292,13 @@ class UsersSessionsAPI(generics.GenericAPIView):
                     response = {
                         'message': 'Session not found.',
                     }
-                    return Response(response)
+                    return Response(response, status=status.HTTP_400_BAD_REQUEST)
             
             else:
                 response = {
                         'message': 'User not allowed.',
                     }
-                return Response(response)
+                return Response(response, status=status.HTTP_400_BAD_REQUEST)
 
         else:
             response = {
@@ -323,15 +325,36 @@ class JoinSessionssAPI(generics.GenericAPIView):
             response = {
                 'message': 'user already in session.',
             }
-            return Response(response)
+            return Response(response, status=status.HTTP_400_BAD_REQUEST)
         
         if (sessionselect.filled >= sessionselect.limit):
             response = {
             'message': 'no space.',
             }
-            return Response(response)
+            return Response(response, status=status.HTTP_400_BAD_REQUEST)
         sessionselect.users.add(request.user)
         sessionselect.filled = sessionselect.filled + 1
+
+        user = request.user
+        try:
+            metadata = user.metadata
+
+        except Exception as e:
+            metadata = Metadata(user=user)
+            
+        if (sessionselect.category == "Sport"):
+            metadata.sport += 1
+        if (sessionselect.category == "Study"):
+            metadata.study += 1
+        if (sessionselect.category == "Meeting"):
+            metadata.meeting += 1
+        if (sessionselect.category == "Work"):
+            metadata.work += 1
+        if (sessionselect.category == "hang out"):
+            metadata.hangout += 1
+
+        metadata.save()
+
         sessionselect.save()
 
         """Add to google calendar"""
@@ -380,9 +403,30 @@ class CancelSessionssAPI(generics.GenericAPIView):
                 response = {
                     'message': 'user not in session.',
                 }
-                return Response(response)
+                return Response(response, status=status.HTTP_400_BAD_REQUEST)
             sessionselect.filled = sessionselect.filled - 1
             sessionselect.save()
+
+            user = request.user
+            try:
+                metadata = user.metadata
+
+            except Exception as e:
+                metadata = Metadata(user=user)
+                
+            if (sessionselect.category == "Sport" and metadata.sport>0):
+                metadata.sport -= 1
+            if (sessionselect.category == "Study" and metadata.study>0):
+                metadata.study -= 1
+            if (sessionselect.category == "Meeting" and metadata.meeting>0):
+                metadata.meeting -= 1
+            if (sessionselect.category == "Work" and metadata.work>0):
+                metadata.work -= 1
+            if (sessionselect.category == "hang out" and metadata.hangout>0):
+                metadata.hangout -= 1
+            metadata.save()
+
+
             response = {
                     'status': 'success',
                     'code': status.HTTP_200_OK,
@@ -394,7 +438,7 @@ class CancelSessionssAPI(generics.GenericAPIView):
             response = {
                 'message': 'Session not found.',
             }
-            return Response(response)
+            return Response(response, status=status.HTTP_400_BAD_REQUEST)
 
 
 class GetSessionssAPI(generics.GenericAPIView):
@@ -409,11 +453,62 @@ class GetSessionssAPI(generics.GenericAPIView):
         return Response(serializer.data)
 
 class GetSessionsDayAPI(generics.GenericAPIView):
-    serializer_class = Session_GetDaySerializer
+    serializer_class = Session_GetSerializer
     permission_classes = (IsAuthenticated,)
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data = request.data)
         serializer.is_valid(raise_exception=True)
         sessions = request.user.user_sessions.filter(time__startswith = serializer.data['time'])
         serializer = (self.get_serializer(sessions, many=True))
+        return Response(serializer.data)
+
+
+
+class GetEventsSuggestionAPI(generics.GenericAPIView):
+    serializer_class = Event_GetSerializer
+    permission_classes = (IsAuthenticated,)
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data = request.data)
+        serializer.is_valid(raise_exception=True)
+        user = request.user
+        
+        queryset = []
+
+        user = request.user
+        try :
+            metadata = user.metadata
+  
+        except Exception as e:
+            metadata = Metadata(user=user)
+    
+        if(metadata.city == "Not set"):
+            events = event.objects.all()
+        else :
+            events = event.objects.filter(location = metadata.city)
+        
+
+        category_name = ["work", "sport", "study", "meeting", "hangout"]
+        category_count = [metadata.work, metadata.sport, metadata.study, metadata.meeting, metadata.hangout]
+        
+        for i in range(4):
+            for j in range(0, 4-i):
+                if category_count[j] < category_count[j + 1] :
+                    category_count[j], category_count[j + 1] = category_count[j + 1], category_count[j]
+                    category_name[j], category_name[j + 1] = category_name[j + 1], category_name[j]
+                    
+        for i in range(5):
+            if (category_name[i] == "sport"):
+                q = events.filter(category = "sport")
+            if (category_name[i] == "work"):
+                q = events.filter(category = "work")
+            if (category_name[i] == "meeting"):
+                q = events.filter(category = "meeting")
+            if (category_name[i] == "study"):
+                q = events.filter(category = "study")
+            if (category_name[i] == "hangout"):
+                q = events.filter(category = "hangout")
+            for x in q:
+                queryset.append(x)
+
+        serializer = (self.get_serializer(queryset, many=True))
         return Response(serializer.data)

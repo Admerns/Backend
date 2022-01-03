@@ -3,6 +3,7 @@ from django.db.models.query import QuerySet
 from rest_framework import generics, status
 from rest_framework.fields import empty
 from rest_framework.decorators import api_view
+from accounts.models import Metadata
 from tasks.models import task
 from .serializers import Task_CreateSerializer, Task_GetSerializer, Task_EditSerializer, Task_Get_DaySerializer, Task_FinishSerializer, Task_DeleteSerializer
 from rest_framework.response import Response
@@ -23,7 +24,25 @@ class TasksAPI(generics.GenericAPIView):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         task = serializer.save()
+        user = request.user
+        try:
+            metadata = user.metadata
 
+        except Exception as e:
+            metadata = Metadata(user=user)
+            
+        if (task.category == "Sport"):
+            metadata.sport += 1
+        if (task.category == "Study"):
+            metadata.study += 1
+        if (task.category == "Meeting"):
+            metadata.meeting += 1
+        if (task.category == "Work"):
+            metadata.work += 1
+        if (task.category == "hang out"):
+            metadata.hangout += 1
+
+        metadata.save()
         with connection.cursor() as cursor:
             cursor.execute("SELECT userid FROM google_calendar")
             userids = cursor.fetchall()
@@ -76,13 +95,13 @@ class EditTasksAPI(generics.UpdateAPIView):
                 response = {
                     'message': 'task_token is required.',
                 }
-                return Response(response)
+                return Response(response, status=status.HTTP_400_BAD_REQUEST)
 
             if (editingTask == None):
                 response = {
                     'message': 'Task not found.',
                 }
-                return Response(response)
+                return Response(response, status=status.HTTP_400_BAD_REQUEST)
 
             if(serializer.data.get("title") != None):
                 editingTask.title = (serializer.data.get("title"))
@@ -126,13 +145,13 @@ class FinishTaskAPI(generics.UpdateAPIView):
                 response = {
                     'message': 'task_token is required.',
                 }
-                return Response(response)
+                return Response(response, status=status.HTTP_400_BAD_REQUEST)
 
             if (finishedTask == None):
                 response = {
                     'message': 'Task not found.',
                 }
-                return Response(response)
+                return Response(response, status=status.HTTP_400_BAD_REQUEST)
             
             if (serializer.data['status'] == "done"):
                 finishedTask.status = 'done'
@@ -142,7 +161,7 @@ class FinishTaskAPI(generics.UpdateAPIView):
                 response = {
                     'message': 'Status not defined.',
                 }
-                return Response(response)
+                return Response(response, status=status.HTTP_400_BAD_REQUEST)
             finishedTask.save()
 
             response = {
@@ -188,17 +207,37 @@ class DeleteTaskAPI(generics.GenericAPIView):
             if ('task_token' in serializer.data):
                 finishedTask = task.objects.filter(userid = request.user.id , task_token = serializer.data['task_token']).first()
                 try:
+                    user = request.user
+                    try:
+                        metadata = user.metadata
+
+                    except Exception as e:
+                        metadata = Metadata(user=user)
+                        
+                    if (finishedTask.category == "Sport" and metadata.sport>0):
+                        metadata.sport -= 1
+                    if (finishedTask.category == "Study" and metadata.study>0):
+                        metadata.study -= 1
+                    if (finishedTask.category == "Meeting" and metadata.meeting>0):
+                        metadata.meeting -= 1
+                    if (finishedTask.category == "Work" and metadata.work>0):
+                        metadata.work -= 1
+                    if (finishedTask.category == "hang out" and metadata.hangout>0):
+                        metadata.hangout -= 1
+                    metadata.save()
+
                     task.delete(finishedTask)
+                    
                 except Exception as e:
                     response = {
                         'message': 'Task not found.',
                     }
-                    return Response(response)
+                    return Response(response, status=status.HTTP_400_BAD_REQUEST)
             else:
                 response = {
                     'message': 'task_token is required.',
                 }
-                return Response(response)
+                return Response(response,  status=status.HTTP_400_BAD_REQUEST)
                 
         
 
