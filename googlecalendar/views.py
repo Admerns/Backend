@@ -52,8 +52,6 @@ class CoordinatesAPI(generics.GenericAPIView):
 
             metadata.city = metadata.city.removesuffix(' Province')
             metadata.city = metadata.city.removesuffix(' State')
-     
-
             #metadata.city = city
             metadata.save()
             response = {
