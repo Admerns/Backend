@@ -334,7 +334,7 @@ class JoinSessionssAPI(generics.GenericAPIView):
             return Response(response, status=status.HTTP_400_BAD_REQUEST)
         sessionselect.users.add(request.user)
         sessionselect.filled = sessionselect.filled + 1
-
+        eventselect = sessionselect.event
         user = request.user
         try:
             metadata = user.metadata
@@ -342,15 +342,15 @@ class JoinSessionssAPI(generics.GenericAPIView):
         except Exception as e:
             metadata = Metadata(user=user)
             
-        if (sessionselect.category == "Sport"):
+        if (eventselect.category == "Sport"):
             metadata.sport += 1
-        if (sessionselect.category == "Study"):
+        if (eventselect.category == "Study"):
             metadata.study += 1
-        if (sessionselect.category == "Meeting"):
+        if (eventselect.category == "Meeting"):
             metadata.meeting += 1
-        if (sessionselect.category == "Work"):
+        if (eventselect.category == "Work"):
             metadata.work += 1
-        if (sessionselect.category == "hang out"):
+        if (eventselect.category == "hang out"):
             metadata.hangout += 1
 
         metadata.save()
@@ -396,6 +396,8 @@ class CancelSessionssAPI(generics.GenericAPIView):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         sessionselect = session.objects.filter(session_token = serializer.data['session_token']).first()
+        eventselect = sessionselect.event
+        
         try :
             if (sessionselect.users.filter(id=request.user.id).exists()):
                 sessionselect.users.remove(request.user)
@@ -414,15 +416,15 @@ class CancelSessionssAPI(generics.GenericAPIView):
             except Exception as e:
                 metadata = Metadata(user=user)
                 
-            if (sessionselect.category == "Sport" and metadata.sport>0):
+            if (eventselect.category == "Sport" and metadata.sport>0):
                 metadata.sport -= 1
-            if (sessionselect.category == "Study" and metadata.study>0):
+            if (eventselect.category == "Study" and metadata.study>0):
                 metadata.study -= 1
-            if (sessionselect.category == "Meeting" and metadata.meeting>0):
+            if (eventselect.category == "Meeting" and metadata.meeting>0):
                 metadata.meeting -= 1
-            if (sessionselect.category == "Work" and metadata.work>0):
+            if (eventselect.category == "Work" and metadata.work>0):
                 metadata.work -= 1
-            if (sessionselect.category == "hang out" and metadata.hangout>0):
+            if (eventselect.category == "hang out" and metadata.hangout>0):
                 metadata.hangout -= 1
             metadata.save()
 
