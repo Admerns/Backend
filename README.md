@@ -1,4 +1,4 @@
-Shanbe
+# Shanbe
 Shanbe is a planing and task management mobile application developed to help users with time management and scheduling.
 Some of the features include:
 -Creating tasks and events for a specific time and date.
