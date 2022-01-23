@@ -6,6 +6,7 @@ from rest_framework import generics, status
 from .serializers import GoogleCalendarLogin_CreateSerializer, Coordinates_CreateSerializer
 from accounts.models import Metadata
 from geopy.geocoders import Nominatim
+from django.shortcuts import redirect
 
 # Create your views here.
 
@@ -67,3 +68,6 @@ class CoordinatesAPI(generics.GenericAPIView):
             }
             return Response(response, status=status.HTTP_400_BAD_REQUEST)
         
+class GetAppAPI(generics.GenericAPIView):
+    def get(self, request, *args, **kwargs):
+        return redirect("https://drive.google.com/file/d/1kaKHCHGfQIpKMK0gIRXC7w6MAxb_VPzs/view?usp=drivesdk")
