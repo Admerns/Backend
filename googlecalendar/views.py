@@ -70,4 +70,4 @@ class CoordinatesAPI(generics.GenericAPIView):
         
 class GetAppAPI(generics.GenericAPIView):
     def get(self, request, *args, **kwargs):
-        return redirect("https://drive.google.com/file/d/1kaKHCHGfQIpKMK0gIRXC7w6MAxb_VPzs/view?usp=drivesdk")
+        return redirect("https://drive.google.com/file/d/1lhIe1BSjcKbgNI-47QzsrcUztn4IFD-i/view?usp=drivesdk")
