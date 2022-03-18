@@ -116,10 +116,10 @@ WSGI_APPLICATION = 'Shanbe_Back.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'JbYuR8XzJt',
-        'HOST': 'remotemysql.com',
+        'NAME': 'shanbe',
+        'HOST': 'db4free.net',
         'PORT': '3306',
-        'USER': 'JbYuR8XzJt',
+        'USER': 'shanbe',
         'PASSWORD': get_secret("DB_PASSWORD"),
     }
 }
